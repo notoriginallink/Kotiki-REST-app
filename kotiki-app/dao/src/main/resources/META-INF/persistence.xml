@@ -9,6 +9,7 @@
         </description>
 
         <class>ru.tolstov.models.Cat</class>
+        <class>ru.tolstov.models.Owner</class>
 
         <properties>
             <!-- Database connection settings -->

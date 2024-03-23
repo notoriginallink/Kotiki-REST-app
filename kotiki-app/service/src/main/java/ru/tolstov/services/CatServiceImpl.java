@@ -2,6 +2,7 @@ package ru.tolstov.services;
 
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
+import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.CatRepository;
 
 import java.util.Date;
@@ -15,12 +16,13 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public Cat addCat(String name, Date bithdate, String breed, CatColor color) {
+    public Cat addCat(String name, Date bithdate, String breed, CatColor color, Owner owner) {
         var cat = new Cat();
         cat.setName(name);
         cat.setBirtdate(bithdate);
         cat.setBreed(breed);
         cat.setColor(color);
+        cat.setOwner(owner);
         catRepository.registerCat(cat);
 
         return cat;
