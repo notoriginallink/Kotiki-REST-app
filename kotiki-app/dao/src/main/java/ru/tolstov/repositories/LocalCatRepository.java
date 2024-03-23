@@ -14,7 +14,10 @@ public class LocalCatRepository extends LocalRepository implements CatRepository
 
     @Override
     public void deleteCat(Cat cat) {
-
+        inTransaction(entityManager -> {
+            var persistedCat = entityManager.find(Cat.class, cat.getId());
+            entityManager.remove(persistedCat);
+        });
     }
 
     @Override

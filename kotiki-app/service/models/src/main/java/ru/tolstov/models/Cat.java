@@ -22,8 +22,8 @@ public class Cat {
     @Column(name = "color")
     @Enumerated(EnumType.STRING)
     private CatColor color;
-//    @ManyToOne
-//    @JoinColumn(name = "owner_id")
-//    private Owner owner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private Owner owner;
 //    private List<Cat> friends;
 }

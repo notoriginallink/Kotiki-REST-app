@@ -1,15 +1,14 @@
 package ru.tolstov.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
+@Table(name = "owners")
 public class Owner {
     @Id
     @GeneratedValue
@@ -20,5 +19,7 @@ public class Owner {
     private String lastName;
     @Column(name = "birthdate")
     private Date birthdate;
-//    private List<Cat> cats;
+    @OneToMany
+    @JoinColumn(name = "owner_id")
+    private List<Cat> cats;
 }
