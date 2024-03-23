@@ -1,9 +1,13 @@
 package ru.tolstov.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,6 +18,7 @@ import java.util.Date;
 public class Cat {
     @Id
     @GeneratedValue
+    @JoinColumn(name = "cat_id")
     @EqualsAndHashCode.Include
     private long id;
 
@@ -33,5 +38,11 @@ public class Cat {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private Owner owner;
-//    private List<Cat> friends;
+
+    @ManyToMany
+    @JoinTable(
+            name = "friends",
+            joinColumns = @JoinColumn(name = "first_cat_id"),
+            inverseJoinColumns = @JoinColumn(name = "second_cat_id"))
+    private Set<Cat> friends;
 }

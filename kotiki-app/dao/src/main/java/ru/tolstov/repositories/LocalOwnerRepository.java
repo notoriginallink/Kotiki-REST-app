@@ -20,6 +20,12 @@ public class LocalOwnerRepository extends LocalRepository implements OwnerReposi
     }
 
     @Override
+    public Owner getOwnerById(long id) {
+        return entityManagerFactory.createEntityManager()
+                .find(Owner.class, id);
+    }
+
+    @Override
     public void deleteOwner(Owner owner) {
         inTransaction(entityManager -> {
             var persistedOwner = entityManager.find(Owner.class, owner.getId());
