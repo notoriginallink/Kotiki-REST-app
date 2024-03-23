@@ -2,13 +2,10 @@ package ru.tolstov;
 
 import ru.tolstov.repositories.ClientRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class InMemoryClientRepository implements ClientRepository {
-    private final HashMap<Phone, List<Client>> clients;
+    private final Map<Phone, List<Client>> clients;
     public InMemoryClientRepository() {
         clients = new HashMap<>();
     }
@@ -24,30 +21,23 @@ public class InMemoryClientRepository implements ClientRepository {
         if (!clients.containsKey(client.getPhoneNumber()))
             clients.put(client.getPhoneNumber(), new ArrayList<>());
 
-        clients.get(client.getPhoneNumber()).add(client);
+        var phone = client.getPhoneNumber();
+        clients.get(phone).add(client);
     }
 
     @Override
     public void updateAddress(Client client, String address) {
-        var clientInMemory = clients.get(client.getPhoneNumber()).stream()
+        clients.get(client.getPhoneNumber()).stream()
                 .filter(c -> c.getBank().equals(client.getBank()))
-                .findAny();
-
-        if (clientInMemory.isEmpty())
-            throw new RuntimeException("No such client in repository");
-
-        clientInMemory.get().setAddress(address);
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("No such client in repository"));
     }
 
     @Override
     public void updatePassportID(Client client, String passportID) {
-        var clientInMemory = clients.get(client.getPhoneNumber()).stream()
+        clients.get(client.getPhoneNumber()).stream()
                 .filter(c -> c.getBank().equals(client.getBank()))
-                .findAny();
-
-        if (clientInMemory.isEmpty())
-            throw new RuntimeException("No such client in repository");
-
-        clientInMemory.get().setPassportID(passportID);
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("No such client in repository"));
     }
 }

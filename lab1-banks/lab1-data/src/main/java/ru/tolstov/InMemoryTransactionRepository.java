@@ -29,10 +29,8 @@ public class InMemoryTransactionRepository implements TransactionRepository {
 
     @Override
     public void updateStatus(Transaction transaction, TransactionStatus status) {
-        Transaction transactionInMemory = transactions.get(transaction.getId());
-        if (transactionInMemory == null)
+        var id = transaction.getId();
+        if (transactions.get(id) == null)
             throw new RuntimeException("No such transaction in repository");
-
-        transactionInMemory.setStatus(status);
     }
 }

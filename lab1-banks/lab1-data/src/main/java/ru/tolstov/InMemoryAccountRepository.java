@@ -22,7 +22,6 @@ public class InMemoryAccountRepository implements AccountRepository {
             throw new RuntimeException("Account with this id %s already exists".formatted(id));
 
         accounts.put(id, account);
-
     }
 
     @Override
@@ -32,9 +31,6 @@ public class InMemoryAccountRepository implements AccountRepository {
 
         if (accountInMemory == null)
             throw new RuntimeException("No such account in repository");
-
-        accountInMemory.getBalance().setValue(value.getValue());
-
     }
 
     @Override
@@ -44,8 +40,6 @@ public class InMemoryAccountRepository implements AccountRepository {
 
         if (accountInMemory == null)
             throw new RuntimeException("No such account in repository");
-
-        accountInMemory.setStatus(status);
     }
 
     @Override
