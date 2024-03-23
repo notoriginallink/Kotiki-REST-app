@@ -23,6 +23,7 @@ public class DepositTransaction extends Transaction {
     @Override
     public void cancel() {
         account.withdraw(value);
+        status = TransactionStatus.CANCELED;
     }
 
     @Override

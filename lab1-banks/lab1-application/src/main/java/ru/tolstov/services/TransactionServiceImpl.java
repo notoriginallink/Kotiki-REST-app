@@ -76,7 +76,6 @@ public class TransactionServiceImpl implements TransactionService {
             return new ServiceOperationResult.Fail("Transaction can't be canceled, status: %s".formatted(transaction.getStatus()));
 
         transaction.cancel();
-        transaction.setStatus(TransactionStatus.CANCELED);
         transactionRepository.updateStatus(transaction, TransactionStatus.CANCELED);
 
         return new ServiceOperationResult.Success();

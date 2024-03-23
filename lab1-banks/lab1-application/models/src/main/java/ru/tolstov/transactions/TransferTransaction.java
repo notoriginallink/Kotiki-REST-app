@@ -27,6 +27,7 @@ public class TransferTransaction extends Transaction {
     public void cancel() {
         from.deposit(value);
         to.withdraw(value);
+        status = TransactionStatus.CANCELED;
     }
 
     @Override
