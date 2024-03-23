@@ -39,9 +39,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ServiceOperationResult updateAddress(Client client, String address) {
-        var bank = bankRepository.findBankByName(client.getBank().getName());
-        if (bank.isEmpty())
-            throw new RuntimeException("Clients bank does not exists");
+        checkBankPresence(client);
 
         if (client.getAddress() == null && client.getPassportID() != null) {
             var clientAccounts = bankRepository.getAllAccounts(client.getBank()).stream()
@@ -61,9 +59,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ServiceOperationResult updatePassportID(Client client, String passportID) {
-        var bank = bankRepository.findBankByName(client.getBank().getName());
-        if (bank.isEmpty())
-            throw new RuntimeException("Client's bank does not exists");
+        checkBankPresence(client);
 
         if (client.getAddress() != null && client.getPassportID() == null) {
             var clientAccounts = bankRepository.getAllAccounts(client.getBank()).stream()
@@ -91,5 +87,11 @@ public class ClientServiceImpl implements ClientService {
         return bankRepository.getAllAccounts(bank).stream()
                 .filter(c -> c.getClient().equals(client))
                 .toList();
+    }
+
+    private void checkBankPresence(Client client) {
+        var bank = bankRepository.findBankByName(client.getBank().getName());
+        if (bank.isEmpty())
+            throw new RuntimeException("Client's bank does not exists");
     }
 }

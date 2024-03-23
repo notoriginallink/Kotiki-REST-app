@@ -86,8 +86,17 @@ public class AccountOperationServiceImpl implements AccountOperationService {
     @Override
     public ServiceOperationResult transfer(Account from, Account to, double value) {
         var moneyToTransfer = new Money(value);
-        if (from.getStatus().equals(AccountStatus.SUSPENDED) && value > from.getSuspendedLimit().getValue())
+        if (from.getStatus().equals(AccountStatus.SUSPENDED) && value > from.getSuspendedLimit().getValue()) {
+            transactionService.createTransferTransaction(
+                    CentralBankServiceImpl.currentDate(),
+                    from,
+                    to,
+                    moneyToTransfer,
+                    TransactionStatus.FAILED
+            );
             return new ServiceOperationResult.Fail("Can't transfer more than %s from suspended account".formatted(value));
+        }
+
 
         var result = from.withdraw(moneyToTransfer);
         if (result instanceof AccountOperationResult.Success successFrom) {
