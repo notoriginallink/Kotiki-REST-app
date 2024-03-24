@@ -7,24 +7,22 @@ import java.util.function.Consumer;
 
 public class LocalCatRepository extends LocalRepository implements CatRepository {
     @Override
-    public Cat registerCat(Consumer<Cat> work) {
-        Cat cat = new Cat();
+    public long registerCat(Consumer<Cat> work) {
+        var cat = new Cat();
         inTransaction(entityManager -> {
             work.accept(cat);
             entityManager.persist(cat);
         });
 
-        return cat;
+        return cat.getId();
     }
 
     @Override
-    public Cat deleteCat(Cat cat) {
+    public void deleteCat(Cat cat) {
         inTransaction(entityManager -> {
             var persistedCat = entityManager.find(Cat.class, cat.getId());
             entityManager.remove(persistedCat);
         });
-
-        return cat;
     }
 
     @Override

@@ -3,13 +3,18 @@ package ru.tolstov.repositories;
 import ru.tolstov.models.Owner;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LocalOwnerRepository extends LocalRepository implements OwnerRepository {
     @Override
-    public void registerOwner(Owner owner) {
+    public long registerOwner(Consumer<Owner> work) {
+        var owner = new Owner();
         inTransaction(entityManager -> {
+            work.accept(owner);
             entityManager.persist(owner);
         });
+
+        return owner.getId();
     }
 
     @Override

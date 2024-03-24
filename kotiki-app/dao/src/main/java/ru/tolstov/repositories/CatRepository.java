@@ -6,13 +6,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public interface CatRepository {
-    /**
-     * registers a new cat in repository
-     * @param work operations to initialize a cat
-     * @return created cat
-     * **/
-    Cat registerCat(Consumer<Cat> work);
-    Cat deleteCat(Cat cat);
+    long registerCat(Consumer<Cat> work);
+    void deleteCat(Cat cat);
     List<Cat> getAllCats();
     Cat getCatById(long id);
     void updateFriendship(Cat firstCat, Cat secondCat);
