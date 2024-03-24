@@ -5,8 +5,7 @@ import ru.tolstov.models.CatColor;
 import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
 
-import java.lang.annotation.Inherited;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public long addCat(String name, Date bithdate, String breed, CatColor color, long ownerID) {
+    public long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) {
         var owner = ownerRepository.getOwnerById(ownerID);
         if (owner == null)
             throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));

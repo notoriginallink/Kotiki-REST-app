@@ -3,7 +3,7 @@ package ru.tolstov.services;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ public interface CatService {
      * @param ownerID id of the cat's owner
      * @return ID of created cat
      * **/
-    long addCat(String name, Date bithdate, String breed, CatColor color, long ownerID);
+    long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID);
     /**
      * Removes the cat from repository. If cat with this ID is not present in repository, then nothing happens
      * @param id ID of a cat to be removed

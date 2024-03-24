@@ -3,8 +3,8 @@ package ru.tolstov.services;
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class OwnerServiceImpl implements OwnerService {
@@ -15,11 +15,11 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public long createOwner(String firstName, String lastName, Date birhdate) {
+    public long createOwner(String firstName, String lastName, LocalDate birthdate) {
         return ownerRepository.registerOwner(owner -> {
             owner.setFirstName(firstName);
             owner.setLastName(lastName);
-            owner.setBirthdate(birhdate);
+            owner.setBirthdate(birthdate);
             owner.setCats(new ArrayList<>());
         });
     }

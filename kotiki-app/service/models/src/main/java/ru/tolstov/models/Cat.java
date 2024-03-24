@@ -3,6 +3,7 @@ package ru.tolstov.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class Cat {
     private String name;
 
     @Column(name = "birthdate")
-    private Date birtdate;
+    private LocalDate birtdate;
 
     @Column(name = "breed")
     private String breed;
