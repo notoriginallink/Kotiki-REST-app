@@ -3,14 +3,11 @@ package ru.tolstov.repositories;
 import ru.tolstov.models.Cat;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class LocalCatRepository extends LocalRepository implements CatRepository {
     @Override
-    public long registerCat(Consumer<Cat> work) {
-        var cat = new Cat();
+    public long registerCat(Cat cat) {
         inTransaction(entityManager -> {
-            work.accept(cat);
             entityManager.persist(cat);
         });
 

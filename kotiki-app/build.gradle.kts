@@ -13,9 +13,6 @@ dependencies {
     implementation(project(":kotiki-app:dao:"))
     implementation(project(":kotiki-app:service:"))
     implementation(project(":kotiki-app:service:models"))
-
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 allprojects {
@@ -35,6 +32,13 @@ allprojects {
 
         // https://mvnrepository.com/artifact/org.postgresql/postgresql
         implementation("org.postgresql:postgresql:42.7.3")
+
+        // JUnit
+        testImplementation(platform("org.junit:junit-bom:5.9.1"))
+        testImplementation("org.junit.jupiter:junit-jupiter")
+
+        // https://mvnrepository.com/artifact/org.mockito/mockito-core
+        testImplementation("org.mockito:mockito-core:5.11.0")
     }
 }
 

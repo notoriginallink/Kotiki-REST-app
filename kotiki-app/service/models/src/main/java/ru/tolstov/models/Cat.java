@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -24,7 +23,7 @@ public class Cat {
     private String name;
 
     @Column(name = "birthdate")
-    private LocalDate birtdate;
+    private LocalDate birthdate;
 
     @Column(name = "breed")
     private String breed;

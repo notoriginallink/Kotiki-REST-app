@@ -16,12 +16,13 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
-        return ownerRepository.registerOwner(owner -> {
-            owner.setFirstName(firstName);
-            owner.setLastName(lastName);
-            owner.setBirthdate(birthdate);
-            owner.setCats(new ArrayList<>());
-        });
+        var owner = new Owner();
+        owner.setFirstName(firstName);
+        owner.setLastName(lastName);
+        owner.setBirthdate(birthdate);
+        owner.setCats(new ArrayList<>());
+
+        return ownerRepository.registerOwner(owner);
     }
 
     @Override

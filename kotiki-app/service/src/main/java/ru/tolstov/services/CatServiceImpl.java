@@ -25,14 +25,15 @@ public class CatServiceImpl implements CatService {
         if (owner == null)
             throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
 
-        return catRepository.registerCat(cat -> {
-            cat.setName(name);
-            cat.setBirtdate(bithdate);
-            cat.setBreed(breed);
-            cat.setColor(color);
-            cat.setOwner(owner);
-            cat.setFriends(new HashSet<>());
-        });
+        var cat = new Cat();
+        cat.setName(name);
+        cat.setBirthdate(bithdate);
+        cat.setBreed(breed);
+        cat.setColor(color);
+        cat.setOwner(owner);
+        cat.setFriends(new HashSet<>());
+
+        return catRepository.registerCat(cat);
     }
 
     @Override

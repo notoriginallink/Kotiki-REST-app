@@ -3,10 +3,9 @@ package ru.tolstov.repositories;
 import ru.tolstov.models.Cat;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public interface CatRepository {
-    long registerCat(Consumer<Cat> work);
+    long registerCat(Cat cat);
     void deleteCat(Cat cat);
     List<Cat> getAllCats();
     Cat getCatById(long id);
