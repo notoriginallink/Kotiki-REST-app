@@ -1,4 +1,5 @@
 rootProject.name = "is-tech-labs"
+
 include("lab1-banks")
 include("lab1-application")
 include("lab1-banks:lab1-application")
@@ -13,3 +14,13 @@ include("lab1-banks:lab1-application:infrastructure")
 findProject(":lab1-banks:lab1-application:infrastructure")?.name = "infrastructure"
 include("lab1-banks:lab1-application:models")
 findProject(":lab1-banks:lab1-application:models")?.name = "models"
+
+include("kotiki-app")
+include("kotiki-app:controller")
+findProject(":kotiki-app:controller")?.name = "controller"
+include("kotiki-app:dao")
+findProject(":kotiki-app:dao")?.name = "dao"
+include("kotiki-app:service")
+findProject(":kotiki-app:service")?.name = "service"
+include("kotiki-app:service:models")
+findProject(":kotiki-app:service:models")?.name = "models"
