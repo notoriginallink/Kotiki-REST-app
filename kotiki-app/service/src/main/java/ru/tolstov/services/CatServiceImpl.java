@@ -96,7 +96,7 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public List<Cat> getAllFriends(long id) {
+    public List<Cat> getFriends(long id) {
         Cat cat = checkCatPresent(id);
 
         return cat.getFriends().stream().toList();

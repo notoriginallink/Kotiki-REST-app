@@ -58,5 +58,5 @@ public interface CatService {
      * @param id cat's ID
      * @return {@code List} with cats
      * **/
-    List<Cat> getAllFriends(long id);
+    List<Cat> getFriends(long id);
 }

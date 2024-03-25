@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.models.Owner;
@@ -17,10 +14,7 @@ import ru.tolstov.services.CatServiceImpl;
 import ru.tolstov.services.UnknownEntityIdException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -227,6 +221,24 @@ public class CatServiceTests {
     }
 
     @Test
+    void getFriends_ShouldBeSuccessful() {
+        long id = 1;
+        Set<Cat> friends = new HashSet<>();
+        friends.add(new Cat());
+        Cat cat = new Cat();
+        cat.setId(1);
+        cat.setFriends(friends);
+        int expectedSize = 1;
+
+        Mockito.when(catRepository.getCatById(id)).thenReturn(cat);
+
+        List<Cat> actualFriends = catService.getFriends(id);
+        int actualSize = actualFriends.size();
+
+        assertEquals(expectedSize, actualSize);
+    }
+
+    @Test
     void friendshipMethods_WhenCatsAreNotInRepository_ShouldThrowException() {
         long catID1 = 1;
         long catID2 = 2;
@@ -246,6 +258,10 @@ public class CatServiceTests {
 
         Assertions.assertThrowsExactly(UnknownEntityIdException.class, () -> {
             catService.destroyFriendship(catID1, catID2);
+        });
+
+        Assertions.assertThrowsExactly(UnknownEntityIdException.class, () -> {
+            catService.getFriends(catID2);
         });
     }
 }
