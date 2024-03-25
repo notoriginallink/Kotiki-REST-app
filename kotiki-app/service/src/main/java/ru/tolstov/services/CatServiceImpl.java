@@ -95,6 +95,13 @@ public class CatServiceImpl implements CatService {
         catRepository.updateFriendship(firstCat, secondCat);
     }
 
+    @Override
+    public List<Cat> getAllFriends(long id) {
+        Cat cat = checkCatPresent(id);
+
+        return cat.getFriends().stream().toList();
+    }
+
     private Cat checkCatPresent(long id) {
         var cat = catRepository.getCatById(id);
         if (cat == null)

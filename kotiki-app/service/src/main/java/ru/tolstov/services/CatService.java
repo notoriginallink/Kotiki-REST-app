@@ -53,4 +53,10 @@ public interface CatService {
      * @param secondCatID ID of second cat
      * **/
     void destroyFriendship(long firstCatID, long secondCatID);
+    /**
+     * returns List containing all friend of cat with provided ID
+     * @param id cat's ID
+     * @return {@code List} with cats
+     * **/
+    List<Cat> getAllFriends(long id);
 }
