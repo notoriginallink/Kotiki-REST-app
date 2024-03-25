@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation(":kotiki-app:service:")
 }
 
 tasks.test {
