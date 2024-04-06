@@ -17,6 +17,7 @@ public class Owner {
     @EqualsAndHashCode.Include
     @Id
     @GeneratedValue
+    @Column(name = "owner_id")
     private long id;
 
     @Column(name = "first_name")

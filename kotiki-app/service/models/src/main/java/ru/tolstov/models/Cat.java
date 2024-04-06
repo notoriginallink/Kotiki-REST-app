@@ -15,7 +15,7 @@ import java.util.Set;
 public class Cat {
     @Id
     @GeneratedValue
-    @JoinColumn(name = "cat_id")
+    @Column(name = "cat_id")
     @EqualsAndHashCode.Include
     private long id;
 
