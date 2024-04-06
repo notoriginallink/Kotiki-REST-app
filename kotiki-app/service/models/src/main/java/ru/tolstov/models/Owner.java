@@ -30,7 +30,6 @@ public class Owner {
     private LocalDate birthdate;
 
     @ToString.Exclude
-    @OneToMany
-    @JoinColumn(name = "owner_id")
+    @OneToMany(mappedBy = "owner")
     private List<Cat> cats;
 }

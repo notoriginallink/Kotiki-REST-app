@@ -25,11 +25,6 @@ public class Main {
         var id2 = catService.addCat("Plusha", LocalDate.now(), "Angorian", CatColor.WHITE, you);
         var id3 = catService.addCat("Sema", LocalDate.now(), "Persian", CatColor.GREY, me);
 
-        catService.getAllCats().forEach(System.out::println);
-        ownerService.getAllOwners().forEach(System.out::println);
-        catService.removeCat(id2);
-        ownerService.removeOwner(you);
-        catService.getAllCats().forEach(System.out::println);
-        ownerService.getAllOwners().forEach(System.out::println);
+        catService.makeFriendship(id1, id2);
     }
 }
