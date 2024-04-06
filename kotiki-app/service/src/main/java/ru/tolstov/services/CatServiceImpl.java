@@ -4,8 +4,10 @@ import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
+import ru.tolstov.services.dto.CatItem;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -44,13 +46,25 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public List<Cat> getAllCats() {
-        return catRepository.getAllCats();
+    public List<CatItem> getAllCats() {
+        List<CatItem> cats = new ArrayList<>();
+        for (var cat : catRepository.getAllCats()) {
+            if (cat == null)
+                cats.add(null);
+            else
+                cats.add(new CatItem(cat));
+        }
+
+        return cats;
     }
 
     @Override
-    public Optional<Cat> getCatByID(long id) {
-        return Optional.ofNullable(catRepository.getCatById(id));
+    public Optional<CatItem> getCatByID(long id) {
+        Cat cat = catRepository.getCatById(id);
+        if (cat == null)
+            return Optional.empty();
+        else
+            return Optional.of(new CatItem(catRepository.getCatById(id)));
     }
 
     /**
@@ -96,10 +110,14 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public List<Cat> getFriends(long id) {
+    public List<CatItem> getFriends(long id) {
         Cat cat = checkCatPresent(id);
 
-        return cat.getFriends().stream().toList();
+        List<CatItem> cats = new ArrayList<>();
+        for (var friend : cat.getFriends())
+                cats.add(new CatItem(friend));
+
+        return cats;
     }
 
     private Cat checkCatPresent(long id) {

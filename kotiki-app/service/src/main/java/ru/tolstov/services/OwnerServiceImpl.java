@@ -2,6 +2,7 @@ package ru.tolstov.services;
 
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
+import ru.tolstov.services.dto.OwnerItem;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,8 +27,13 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public List<Owner> getAllOwners() {
-        return ownerRepository.getAllOwners();
+    public List<OwnerItem> getAllOwners() {
+        List<OwnerItem> owners = new ArrayList<>();
+        for (var owner : ownerRepository.getAllOwners()) {
+            owners.add(new OwnerItem(owner));
+        }
+
+        return owners;
     }
 
     @Override
