@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-public class CatServiceImpl implements CatService {
+public class CatServiceImpl extends ServiceBase implements CatService {
     private final CatRepository catRepository;
     private final OwnerRepository ownerRepository;
 
@@ -23,48 +23,67 @@ public class CatServiceImpl implements CatService {
 
     @Override
     public long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) {
-        var owner = ownerRepository.getOwnerById(ownerID);
-        if (owner == null)
-            throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
-
         var cat = new Cat();
-        cat.setName(name);
-        cat.setBirthdate(bithdate);
-        cat.setBreed(breed);
-        cat.setColor(color);
-        cat.setOwner(owner);
-        cat.setFriends(new HashSet<>());
 
-        return catRepository.registerCat(cat);
+        inTransaction(entityManager -> {
+            ownerRepository.setEntityManager(entityManager);
+
+            var owner = ownerRepository.getOwnerById(ownerID);
+            if (owner == null)
+                throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
+
+            cat.setName(name);
+            cat.setBirthdate(bithdate);
+            cat.setBreed(breed);
+            cat.setColor(color);
+            cat.setOwner(owner);
+            cat.setFriends(new HashSet<>());
+
+            cat.setId(catRepository.registerCat(cat));
+        });
+
+        return cat.getId();
     }
 
     @Override
     public void removeCat(long id) {
-        var cat = catRepository.getCatById(id);
-        if (cat != null)
-            catRepository.deleteCat(cat);
+        inTransaction(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+
+            var cat = catRepository.getCatById(id);
+            if (cat != null)
+                catRepository.deleteCat(cat);
+        });
     }
 
     @Override
     public List<CatItem> getAllCats() {
         List<CatItem> cats = new ArrayList<>();
-        for (var cat : catRepository.getAllCats()) {
-            if (cat == null)
-                cats.add(null);
-            else
-                cats.add(new CatItem(cat));
-        }
+
+        inTransaction(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+            for (var cat : catRepository.getAllCats()) {
+                if (cat == null)
+                    cats.add(null);
+                else
+                    cats.add(new CatItem(cat));
+            }
+        });
 
         return cats;
     }
 
     @Override
     public Optional<CatItem> getCatByID(long id) {
-        Cat cat = catRepository.getCatById(id);
-        if (cat == null)
-            return Optional.empty();
-        else
-            return Optional.of(new CatItem(catRepository.getCatById(id)));
+        List<CatItem> cats = new ArrayList<>();
+        inTransaction(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+            var cat = catRepository.getCatById(id);
+            if (cat != null)
+                cats.add(new CatItem(cat));
+        });
+
+        return cats.stream().findFirst();
     }
 
     /**
@@ -72,10 +91,19 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     public boolean areFriends(long firstCatID, long secondCatID) {
-        Cat firstCat = checkCatPresent(firstCatID);
-        Cat secondCat = checkCatPresent(secondCatID);
+        return inTransactionBool(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+            var firstCat = catRepository.getCatById(firstCatID);
+            var secondCat = catRepository.getCatById(secondCatID);
 
-        return firstCat.getFriends().contains(secondCat);
+            if (firstCat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(firstCat));
+
+            if (secondCat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(secondCat));
+
+            return firstCat.getFriends().contains(secondCat);
+        });
     }
 
     /**
@@ -83,16 +111,19 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     public void makeFriendship(long firstCatID, long secondCatID) {
-        Cat firstCat = checkCatPresent(firstCatID);
-        Cat secondCat = checkCatPresent(secondCatID);
+        inTransaction(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+            var firstCat = catRepository.getCatById(firstCatID);
+            var secondCat = catRepository.getCatById(secondCatID);
 
-        if (firstCat.getFriends().contains(secondCat))
-            return;
+            if (firstCat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(firstCat));
 
-        firstCat.getFriends().add(secondCat);
-        secondCat.getFriends().add(firstCat);
+            if (secondCat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(secondCat));
 
-        catRepository.updateFriendship(firstCat, secondCat);
+            catRepository.updateFriendship(firstCat, secondCat);
+        });
     }
 
     /**
@@ -100,31 +131,35 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     public void destroyFriendship(long firstCatID, long secondCatID) {
-        Cat firstCat = checkCatPresent(firstCatID);
-        Cat secondCat = checkCatPresent(secondCatID);
+        inTransaction(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+            var firstCat = catRepository.getCatById(firstCatID);
+            var secondCat = catRepository.getCatById(secondCatID);
 
-        firstCat.getFriends().remove(secondCat);
-        secondCat.getFriends().remove(firstCat);
+            if (firstCat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(firstCat));
 
-        catRepository.updateFriendship(firstCat, secondCat);
+            if (secondCat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(secondCat));
+
+            catRepository.updateFriendship(firstCat, secondCat);
+        });
     }
 
     @Override
     public List<CatItem> getFriends(long id) {
-        Cat cat = checkCatPresent(id);
+        List<CatItem> friends = new ArrayList<>();
+        inTransaction(entityManager -> {
+            catRepository.setEntityManager(entityManager);
+            var cat = catRepository.getCatById(id);
 
-        List<CatItem> cats = new ArrayList<>();
-        for (var friend : cat.getFriends())
-                cats.add(new CatItem(friend));
+            if (cat == null)
+                throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(cat));
 
-        return cats;
-    }
+            for (var friend : cat.getFriends())
+                friends.add(new CatItem(friend));
+        });
 
-    private Cat checkCatPresent(long id) {
-        var cat = catRepository.getCatById(id);
-        if (cat == null)
-            throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(id));
-
-        return cat;
+        return friends;
     }
 }

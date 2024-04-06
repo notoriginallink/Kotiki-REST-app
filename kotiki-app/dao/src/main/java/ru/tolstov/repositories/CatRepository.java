@@ -4,7 +4,7 @@ import ru.tolstov.models.Cat;
 
 import java.util.List;
 
-public interface CatRepository {
+public interface CatRepository extends Repository {
     long registerCat(Cat cat);
     void deleteCat(Cat cat);
     List<Cat> getAllCats();

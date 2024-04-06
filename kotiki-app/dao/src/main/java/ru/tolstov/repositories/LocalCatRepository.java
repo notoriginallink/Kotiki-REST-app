@@ -7,39 +7,32 @@ import java.util.List;
 public class LocalCatRepository extends LocalRepository implements CatRepository {
     @Override
     public long registerCat(Cat cat) {
-        inTransaction(entityManager -> {
-            entityManager.persist(cat);
-        });
+        entityManager.persist(cat);
 
         return cat.getId();
     }
 
     @Override
     public void deleteCat(Cat cat) {
-        inTransaction(entityManager -> {
-            var persistedCat = entityManager.find(Cat.class, cat.getId());
-            entityManager.remove(persistedCat);
-        });
+        entityManager.remove(cat);
     }
 
     @Override
     public List<Cat> getAllCats() {
-        return entityManagerFactory.createEntityManager()
+        return entityManager
                 .createQuery("FROM Cat")
                 .getResultList();
     }
 
     @Override
     public Cat getCatById(long id) {
-        return entityManagerFactory.createEntityManager()
+        return entityManager
                 .find(Cat.class, id);
     }
 
     @Override
     public void updateFriendship(Cat firstCat, Cat secondCat) {
-        inTransaction(entityManager -> {
-            entityManager.merge(firstCat);
-            entityManager.merge(secondCat);
-        });
+        entityManager.merge(firstCat);
+        entityManager.merge(secondCat);
     }
 }

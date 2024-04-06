@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OwnerServiceImpl implements OwnerService {
+public class OwnerServiceImpl extends ServiceBase implements OwnerService {
     private final OwnerRepository ownerRepository;
 
     public OwnerServiceImpl(OwnerRepository ownerRepository) {
@@ -18,33 +18,47 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
         var owner = new Owner();
-        owner.setFirstName(firstName);
-        owner.setLastName(lastName);
-        owner.setBirthdate(birthdate);
-        owner.setCats(new ArrayList<>());
 
-        return ownerRepository.registerOwner(owner);
+        inTransaction(entityManager -> {
+            owner.setFirstName(firstName);
+            owner.setLastName(lastName);
+            owner.setBirthdate(birthdate);
+            owner.setCats(new ArrayList<>());
+
+            ownerRepository.setEntityManager(entityManager);
+            owner.setId(ownerRepository.registerOwner(owner));
+        });
+
+        return owner.getId();
     }
 
     @Override
     public List<OwnerItem> getAllOwners() {
         List<OwnerItem> owners = new ArrayList<>();
-        for (var owner : ownerRepository.getAllOwners()) {
-            owners.add(new OwnerItem(owner));
-        }
+
+        inTransaction(entityManager -> {
+            ownerRepository.setEntityManager(entityManager);
+            for (var owner : ownerRepository.getAllOwners()) {
+                owners.add(new OwnerItem(owner));
+            }
+        });
 
         return owners;
     }
 
     @Override
     public void removeOwner(long ownerID) {
-        var owner = ownerRepository.getOwnerById(ownerID);
-        if (owner == null)
-            return;
+        inTransaction(entityManager -> {
+            ownerRepository.setEntityManager(entityManager);
 
-        if (!owner.getCats().isEmpty())
-            throw new RuntimeException("Cant remove owner while he has cats");
+            var owner = ownerRepository.getOwnerById(ownerID);
+            if (owner == null)
+                return;
 
-        ownerRepository.deleteOwner(owner);
+            if (!owner.getCats().isEmpty())
+                throw new RuntimeException("Cant remove owner while he has cats");
+
+            ownerRepository.deleteOwner(owner);
+        });
     }
 }
