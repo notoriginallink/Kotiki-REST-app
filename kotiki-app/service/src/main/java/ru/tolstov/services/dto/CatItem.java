@@ -17,10 +17,12 @@ public class CatItem {
     Long owner;
 
     public CatItem(Cat cat) {
-        this.name = cat.getName();
-        this.birthdate = cat.getBirthdate();
-        this.breed = cat.getBreed();
-        this.color = cat.getColor();
-        this.owner = cat.getOwner().getId();
+        if (cat != null) {
+            this.name = cat.getName();
+            this.birthdate = cat.getBirthdate();
+            this.breed = cat.getBreed();
+            this.color = cat.getColor();
+            this.owner = cat.getOwner().getId();
+        }
     }
 }

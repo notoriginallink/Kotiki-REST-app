@@ -185,7 +185,7 @@ public class CatServiceTests {
             Mockito.verify(catRepository).updateFriendship(cat1, cat2);
 
         boolean actualFriendship = catService.areFriends(catID1, catID2);
-        assertEquals(expectedFriendship, expectedFriendship);
+        assertEquals(expectedFriendship, actualFriendship);
     }
 
     @ParameterizedTest
@@ -202,7 +202,7 @@ public class CatServiceTests {
             Mockito.verify(catRepository).updateFriendship(cat1, cat2);
 
         boolean actualFriendship = catService.areFriends(catID1, catID2);
-        assertEquals(expectedFriendship, expectedFriendship);
+        assertEquals(expectedFriendship, actualFriendship);
     }
 
     static Stream<Object> catsProviderFactory() {

@@ -17,33 +17,29 @@ public class OwnerServiceImpl extends ServiceBase implements OwnerService {
 
     @Override
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
-        var owner = new Owner();
-
-        inTransaction(entityManager -> {
+        return inTransaction(entityManager -> {
+            var owner = new Owner();
             owner.setFirstName(firstName);
             owner.setLastName(lastName);
             owner.setBirthdate(birthdate);
             owner.setCats(new ArrayList<>());
 
             ownerRepository.setEntityManager(entityManager);
-            owner.setId(ownerRepository.registerOwner(owner));
-        });
 
-        return owner.getId();
+            return ownerRepository.registerOwner(owner);
+        });
     }
 
     @Override
     public List<OwnerItem> getAllOwners() {
-        List<OwnerItem> owners = new ArrayList<>();
-
-        inTransaction(entityManager -> {
+        return inTransaction(entityManager -> {
             ownerRepository.setEntityManager(entityManager);
-            for (var owner : ownerRepository.getAllOwners()) {
+            List<OwnerItem> owners = new ArrayList<>();
+            for (var owner : ownerRepository.getAllOwners())
                 owners.add(new OwnerItem(owner));
-            }
-        });
 
-        return owners;
+            return owners;
+        });
     }
 
     @Override
@@ -53,12 +49,14 @@ public class OwnerServiceImpl extends ServiceBase implements OwnerService {
 
             var owner = ownerRepository.getOwnerById(ownerID);
             if (owner == null)
-                return;
+                return null;
 
             if (!owner.getCats().isEmpty())
                 throw new RuntimeException("Cant remove owner while he has cats");
 
             ownerRepository.deleteOwner(owner);
+
+            return null;
         });
     }
 }

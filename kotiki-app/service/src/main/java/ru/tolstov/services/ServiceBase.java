@@ -13,33 +13,15 @@ public abstract class ServiceBase {
     public ServiceBase() {
         entityManagerFactory = EntityManagerFactoryProvider.getEntityManagerFactory();
     }
-    protected void inTransaction(Consumer<EntityManager> work) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            work.accept(entityManager);
-            transaction.commit();
-        }
-        catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        }
-        finally {
-            entityManager.close();
-        }
-    }
 
-    protected boolean inTransactionBool(Function<EntityManager, Boolean> work) {
+    protected <T> T inTransaction(Function<EntityManager, T> work) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
+        T result;
         try {
             transaction.begin();
-            boolean res = work.apply(entityManager);
+            result = work.apply(entityManager);
             transaction.commit();
-            return res;
         }
         catch (Exception e) {
             if (transaction.isActive()) {
@@ -50,5 +32,7 @@ public abstract class ServiceBase {
         finally {
             entityManager.close();
         }
+
+        return result;
     }
 }
