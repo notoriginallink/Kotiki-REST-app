@@ -5,7 +5,6 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import ru.tolstov.utils.EntityManagerFactoryProvider;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class ServiceBase {
