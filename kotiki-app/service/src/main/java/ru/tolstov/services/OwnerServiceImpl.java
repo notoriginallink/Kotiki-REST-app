@@ -1,5 +1,6 @@
 package ru.tolstov.services;
 
+import jakarta.persistence.EntityManagerFactory;
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.dto.OwnerItem;
@@ -11,7 +12,8 @@ import java.util.List;
 public class OwnerServiceImpl extends ServiceBase implements OwnerService {
     private final OwnerRepository ownerRepository;
 
-    public OwnerServiceImpl(OwnerRepository ownerRepository) {
+    public OwnerServiceImpl(EntityManagerFactory entityManagerFactory, OwnerRepository ownerRepository) {
+        super(entityManagerFactory);
         this.ownerRepository = ownerRepository;
     }
 

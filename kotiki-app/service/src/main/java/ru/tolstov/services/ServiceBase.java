@@ -9,8 +9,8 @@ import java.util.function.Function;
 
 public abstract class ServiceBase {
     protected final EntityManagerFactory entityManagerFactory;
-    public ServiceBase() {
-        entityManagerFactory = EntityManagerFactoryProvider.getEntityManagerFactory();
+    public ServiceBase(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     protected <T> T inTransaction(Function<EntityManager, T> work) {

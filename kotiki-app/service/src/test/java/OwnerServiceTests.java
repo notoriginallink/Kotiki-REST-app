@@ -1,9 +1,12 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.Owner;
-import ru.tolstov.repositories.CatRepository;
+import ru.tolstov.repositories.LocalOwnerRepository;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.OwnerServiceImpl;
 import ru.tolstov.services.dto.OwnerItem;
@@ -16,17 +19,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OwnerServiceTests {
-    @Mock
-    private CatRepository catRepository;
-    @Mock
-    private OwnerRepository ownerRepository;
+    private static OwnerRepository ownerRepository;
+    private static EntityManagerFactory entityManagerFactory;
     @Spy
     List<Cat> cats;
-    @InjectMocks
     private OwnerServiceImpl ownerService;
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+        ownerRepository = Mockito.spy(new LocalOwnerRepository());
+        ownerService = new OwnerServiceImpl(entityManagerFactory, ownerRepository);
+    }
+
+    @BeforeAll
+    public static void initDB() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("kotiki-test-database");
+    }
+
+    @AfterAll
+    public static void closeDB() {
+        entityManagerFactory.close();;
     }
 
     @Test
@@ -37,7 +49,7 @@ public class OwnerServiceTests {
         long expectedID = 1;
         Owner owner = new Owner();
 
-        Mockito.when(ownerRepository.registerOwner(owner)).thenReturn(expectedID);
+        Mockito.doReturn(expectedID).when(ownerRepository).registerOwner(owner);
 
         long actualID = ownerService.createOwner(firstName, lastName, birthdate);
 
@@ -47,31 +59,38 @@ public class OwnerServiceTests {
     @Test
     void getAllOwners_ShouldBeSuccessful() {
         Owner owner = new Owner();
-        List<Owner> expectedList = new ArrayList<>();
-        int expectedSize = 1;
-        expectedList.add(owner);
+        owner.setId(1);
+        Owner owner1 = new Owner();
+        owner1.setId(2);
 
-        Mockito.when(ownerRepository.getAllOwners()).thenReturn(expectedList);
+        List<Owner> owners = new ArrayList<>();
+        int expectedSize = 2;
+        owners.add(owner);
+        owners.add(owner1);
+
+        List<OwnerItem> expectedList = new ArrayList<>();
+        expectedList.add(new OwnerItem(owner));
+        expectedList.add(new OwnerItem(owner1));
+
+        Mockito.doReturn(owners).when(ownerRepository).getAllOwners();
 
         List<OwnerItem> actualList = ownerService.getAllOwners();
         int actualSize = actualList.size();
 
         assertEquals(expectedSize, actualSize);
-//        assertEquals(expectedList, actualList);
+        Assertions.assertArrayEquals(expectedList.toArray(), actualList.toArray());
     }
 
     @Test
     void removeOwner_WhenNotInRepository_NothingShouldHappen() {
         long ownerID = 1;
-        Owner owner = new Owner();
-        owner.setId(ownerID);
 
         // mock that there's no owner with ID=1
-        Mockito.when(ownerRepository.getOwnerById(ownerID)).thenReturn(null);
+        Mockito.doReturn(null).when(ownerRepository).getOwnerById(ownerID);
 
         ownerService.removeOwner(ownerID);
 
-        Mockito.verify(ownerRepository, Mockito.never()).deleteOwner(owner);
+        Mockito.verify(ownerRepository, Mockito.never()).deleteOwner(Mockito.any());
     }
 
     @Test
@@ -82,7 +101,7 @@ public class OwnerServiceTests {
         owner.setCats(cats);
 
         // mock that there's owner with ID=1
-        Mockito.when(ownerRepository.getOwnerById(ownerID)).thenReturn(owner);
+        Mockito.doReturn(owner).when(ownerRepository).getOwnerById(ownerID);
 
         // mock that owner has cats
         Mockito.doReturn(false).when(cats).isEmpty();
@@ -100,10 +119,13 @@ public class OwnerServiceTests {
         owner.setCats(cats);
 
         // mock that there's owner with ID=1
-        Mockito.when(ownerRepository.getOwnerById(ownerID)).thenReturn(owner);
+        Mockito.doReturn(owner).when(ownerRepository).getOwnerById(ownerID);
 
         // mock that owner has no cats
         Mockito.doReturn(true).when(cats).isEmpty();
+
+        // do not call real database
+        Mockito.doNothing().when(ownerRepository).deleteOwner(Mockito.any());
 
         ownerService.removeOwner(ownerID);
 

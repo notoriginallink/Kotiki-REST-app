@@ -1,14 +1,20 @@
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import org.dbunit.DatabaseUnitException;
+import org.hibernate.HibernateException;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.*;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.CatRepository;
+import ru.tolstov.repositories.LocalCatRepository;
+import ru.tolstov.repositories.LocalOwnerRepository;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.CatServiceImpl;
 import ru.tolstov.services.UnknownEntityIdException;
@@ -18,48 +24,58 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CatServiceTests {
-    @Mock
-    private CatRepository catRepository;
-    @Mock
-    private OwnerRepository ownerRepository;
-    @InjectMocks
-    private CatServiceImpl catService;
+    private static CatRepository catRepository;
+    private static OwnerRepository ownerRepository;
+    private static EntityManagerFactory entityManagerFactory;
+    private static CatServiceImpl catService;
+
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+        catRepository = Mockito.spy(new LocalCatRepository());
+        ownerRepository = Mockito.spy(new LocalOwnerRepository());
+        catService = new CatServiceImpl(entityManagerFactory, catRepository, ownerRepository);
+    }
+
+    @BeforeAll
+    public static void initDB() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("kotiki-test-database");
+    }
+
+    @AfterAll
+    public static void closeDB() {
+        entityManagerFactory.close();
     }
 
     @Test
     void addCat_ShouldBeSuccessful() {
+        // init owner
+        var owner = new Owner();
+        long ownerID = 1;
+        owner.setId(ownerID);
+
+        // init cat
+        Cat cat = new Cat();
+        long expectedCatID = 1;
         String name = "aboba";
         LocalDate date = LocalDate.of(2020, 3,1);
         String breed = "Brodyaga";
         CatColor color = CatColor.ORANGE;
-        long ownerID = 1;
-        long expectedCatID = 1;
-        Cat cat = new Cat();
-        cat.setName(name);
-        cat.setBirthdate(date);
-        cat.setBreed(breed);
-        cat.setColor(color);
-
-        var owner = new Owner();
-        owner.setId(ownerID);
-        cat.setOwner(owner);
-        cat.setFriends(new HashSet<>());
 
         // mock that there's owner with ID=1 in repository
-        Mockito.when(ownerRepository.getOwnerById(ownerID)).thenReturn(owner);
+        Mockito.doReturn(owner).when(ownerRepository).getOwnerById(ownerID);
 
         // registered cat gets ID=1
-        Mockito.when(catRepository.registerCat(cat)).thenReturn(expectedCatID);
+        Mockito.doReturn(expectedCatID).when(catRepository).registerCat(cat);
 
         long actualCatID = catService.addCat(name, date, breed, color, ownerID);
 
-//        Mockito.verify(catRepository).registerCat(cat);
+        Mockito.verify(catRepository).registerCat(cat);
+
         assertEquals(expectedCatID, actualCatID);
     }
 
@@ -72,7 +88,7 @@ public class CatServiceTests {
         var ownerID = 1;
 
         // mock that there's no owner with ID=1 in repository
-        Mockito.when(ownerRepository.getOwnerById(ownerID)).thenReturn(null);
+        Mockito.doReturn(null).when(ownerRepository).getOwnerById(ownerID);
 
         Assertions.assertThrowsExactly(UnknownEntityIdException.class, () -> {
             catService.addCat(name, date, breed, color, ownerID);
@@ -85,8 +101,13 @@ public class CatServiceTests {
         Cat cat = new Cat();
         cat.setId(catID);
 
-        // mock that there's a cat with ID=1 in repository
-        Mockito.when(catRepository.getCatById(catID)).thenReturn(cat);
+        var owner = new Owner();
+        long ownerID = 1;
+        owner.setId(ownerID);
+
+        Mockito.doReturn(owner).when(ownerRepository).getOwnerById(ownerID);
+        Mockito.doReturn(cat).when(catRepository).getCatById(catID);
+        Mockito.doNothing().when(catRepository).deleteCat(Mockito.any());
 
         catService.removeCat(catID);
 
@@ -96,16 +117,19 @@ public class CatServiceTests {
     @Test
     void removeCat_WhenNotPresentInRepository_NothingShouldHappen() {
         long catID = 1;
-        Cat cat = new Cat();
-        cat.setId(catID);
+
+        var owner = new Owner();
+        long ownerID = 1;
+        owner.setId(ownerID);
 
         // mock that there's no cat with ID=1 in repository
-        Mockito.when(catRepository.getCatById(catID)).thenReturn(null);
+        Mockito.doReturn(owner).when(ownerRepository).getOwnerById(ownerID);
+        Mockito.doReturn(null).when(catRepository).getCatById(catID);
 
         catService.removeCat(catID);
 
         // assert that method deleteCat never invokes
-        Mockito.verify(catRepository, Mockito.never()).deleteCat(cat);
+        Mockito.verify(catRepository, Mockito.never()).deleteCat(Mockito.any());
     }
 
     @Test
@@ -117,14 +141,13 @@ public class CatServiceTests {
         int expectedSize = 1;
         expectedList.add(cat);
 
-        Mockito.when(catRepository.getAllCats()).thenReturn(expectedList);
+        Mockito.doReturn(expectedList).when(catRepository).getAllCats();
 
         List<CatItem> actualList = catService.getAllCats();
         int actualSize = actualList.size();
 
         Mockito.verify(catRepository).getAllCats();
         assertEquals(expectedSize, actualSize);
-//        assertEquals(expectedList, actualList);
     }
 
     @Test
@@ -140,7 +163,7 @@ public class CatServiceTests {
         expectedCat.setOwner(owner);
 
         // mock that there's cat with ID=1 in repository
-        Mockito.when(catRepository.getCatById(catID)).thenReturn(expectedCat);
+        Mockito.doReturn(expectedCat).when(catRepository).getCatById(catID);
 
         Optional<CatItem> optionalCat = catService.getCatByID(catID);
 
@@ -154,7 +177,7 @@ public class CatServiceTests {
         long catID = 1;
 
         // mock that there's no cat with ID=1 in repository
-        Mockito.when(catRepository.getCatById(catID)).thenReturn(null);
+        Mockito.doReturn(null).when(catRepository).getCatById(catID);
 
         Optional<CatItem> optionalCat = catService.getCatByID(catID);
 
@@ -164,8 +187,8 @@ public class CatServiceTests {
     @ParameterizedTest
     @MethodSource("catsProviderFactory")
     void areFriends_WhenBothCatsInRepository(long catID1, Cat cat1, long catID2, Cat cat2, boolean expectedResult) {
-        Mockito.when(catRepository.getCatById(catID1)).thenReturn(cat1);
-        Mockito.when(catRepository.getCatById(catID2)).thenReturn(cat2);
+        Mockito.doReturn(cat1).when(catRepository).getCatById(catID1);
+        Mockito.doReturn(cat2).when(catRepository).getCatById(catID2);
 
         boolean actualResult = catService.areFriends(catID1, catID2);
         assertEquals(expectedResult, actualResult);
@@ -176,8 +199,9 @@ public class CatServiceTests {
     void makeFriendship_WhenBothCatsInRepository(long catID1, Cat cat1, long catID2, Cat cat2, boolean areFriends) {
         boolean expectedFriendship = true;
 
-        Mockito.when(catRepository.getCatById(catID1)).thenReturn(cat1);
-        Mockito.when(catRepository.getCatById(catID2)).thenReturn(cat2);
+        Mockito.doReturn(cat1).when(catRepository).getCatById(catID1);
+        Mockito.doReturn(cat2).when(catRepository).getCatById(catID2);
+        Mockito.doNothing().when(catRepository).updateFriendship(Mockito.any(), Mockito.any());
 
         catService.makeFriendship(catID1, catID2);
 
@@ -193,8 +217,9 @@ public class CatServiceTests {
     void destroyFriendship_WhenBothCatsInRepository(long catID1, Cat cat1, long catID2, Cat cat2, boolean areFriends) {
         boolean expectedFriendship = false;
 
-        Mockito.when(catRepository.getCatById(catID1)).thenReturn(cat1);
-        Mockito.when(catRepository.getCatById(catID2)).thenReturn(cat2);
+        Mockito.doReturn(cat1).when(catRepository).getCatById(catID1);
+        Mockito.doReturn(cat2).when(catRepository).getCatById(catID2);
+        Mockito.doNothing().when(catRepository).updateFriendship(Mockito.any(), Mockito.any());
 
         catService.destroyFriendship(catID1, catID2);
 
@@ -259,7 +284,7 @@ public class CatServiceTests {
         cat.setFriends(friends);
         int expectedSize = 1;
 
-        Mockito.when(catRepository.getCatById(id)).thenReturn(cat);
+        Mockito.doReturn(cat).when(catRepository).getCatById(id);
 
         List<CatItem> actualFriends = catService.getFriends(id);
         int actualSize = actualFriends.size();
@@ -274,8 +299,8 @@ public class CatServiceTests {
         Cat cat = new Cat();
         cat.setId(catID1);
 
-        Mockito.when(catRepository.getCatById(catID1)).thenReturn(cat);
-        Mockito.when(catRepository.getCatById(catID2)).thenReturn(null);
+        Mockito.doReturn(cat).when(catRepository).getCatById(catID1);
+        Mockito.doReturn(null).when(catRepository).getCatById(catID2);
 
         Assertions.assertThrowsExactly(UnknownEntityIdException.class, () -> {
             catService.areFriends(catID1, catID2);

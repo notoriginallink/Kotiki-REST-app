@@ -1,5 +1,6 @@
 package ru.tolstov.services;
 
+import jakarta.persistence.EntityManagerFactory;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.repositories.CatRepository;
@@ -16,7 +17,8 @@ public class CatServiceImpl extends ServiceBase implements CatService {
     private final CatRepository catRepository;
     private final OwnerRepository ownerRepository;
 
-    public CatServiceImpl(CatRepository catRepository, OwnerRepository ownerRepository) {
+    public CatServiceImpl(EntityManagerFactory entityManagerFactory, CatRepository catRepository, OwnerRepository ownerRepository) {
+        super(entityManagerFactory);
         this.catRepository = catRepository;
         this.ownerRepository = ownerRepository;
     }
