@@ -47,6 +47,9 @@ allprojects {
         // Persistence
         runtimeOnly("com.h2database:h2")
         runtimeOnly("org.postgresql:postgresql")
+        implementation("org.flywaydb:flyway-core")
+        runtimeOnly("org.flywaydb:flyway-database-postgresql:10.11.0")
+
 
         // JUnit
         testImplementation(platform("org.junit:junit-bom:5.9.1"))

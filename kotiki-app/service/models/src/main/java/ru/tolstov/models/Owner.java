@@ -19,7 +19,7 @@ import java.util.List;
 public class Owner {
     @EqualsAndHashCode.Include
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "owner_id")
     private long id;
 
