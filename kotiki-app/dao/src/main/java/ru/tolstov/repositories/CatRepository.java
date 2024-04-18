@@ -1,13 +1,7 @@
 package ru.tolstov.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.tolstov.models.Cat;
 
-import java.util.List;
-
-public interface CatRepository extends Repository {
-    long registerCat(Cat cat);
-    void deleteCat(Cat cat);
-    List<Cat> getAllCats();
-    Cat getCatById(long id);
-    void updateFriendship(Cat firstCat, Cat secondCat);
+public interface CatRepository extends JpaRepository<Cat, Long> {
 }

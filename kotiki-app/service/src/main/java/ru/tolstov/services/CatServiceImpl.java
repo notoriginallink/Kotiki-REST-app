@@ -1,6 +1,11 @@
 package ru.tolstov.services;
 
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.stereotype.Service;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.repositories.CatRepository;
@@ -8,162 +13,131 @@ import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.dto.CatItem;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class CatServiceImpl extends ServiceBase implements CatService {
+@Service
+@AllArgsConstructor
+public class CatServiceImpl implements CatService {
+    @Autowired
     private final CatRepository catRepository;
+    @Autowired
     private final OwnerRepository ownerRepository;
 
-    public CatServiceImpl(EntityManagerFactory entityManagerFactory, CatRepository catRepository, OwnerRepository ownerRepository) {
-        super(entityManagerFactory);
-        this.catRepository = catRepository;
-        this.ownerRepository = ownerRepository;
-    }
-
     @Override
+    @Transactional
     public long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) {
-        return inTransaction(entityManager -> {
-            ownerRepository.setEntityManager(entityManager);
+        var owner = ownerRepository.findById(ownerID);
+        if (owner.isEmpty())
+            throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
 
-            var owner = ownerRepository.getOwnerById(ownerID);
-            if (owner == null)
-                throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
+        var cat = new Cat();
+        cat.setName(name);
+        cat.setBirthdate(bithdate);
+        cat.setBreed(breed);
+        cat.setColor(color);
+        cat.setOwner(owner.get());
+        cat.setFriends(new HashSet<>());
 
-            var cat = new Cat();
-            cat.setName(name);
-            cat.setBirthdate(bithdate);
-            cat.setBreed(breed);
-            cat.setColor(color);
-            cat.setOwner(owner);
-            cat.setFriends(new HashSet<>());
-
-            return catRepository.registerCat(cat);
-        });
+        return catRepository.save(cat).getId();
     }
 
     @Override
+    @Transactional
     public void removeCat(long id) {
-        inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-
-            var cat = catRepository.getCatById(id);
-            if (cat != null)
-                catRepository.deleteCat(cat);
-
-            return null;
-        });
+        var cat = catRepository.findById(id);
+        cat.ifPresent(catRepository::delete);
     }
 
     @Override
+    @Transactional
     public List<CatItem> getAllCats() {
-        return inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-
-            List<CatItem> cats = new ArrayList<>();
-            for (var cat : catRepository.getAllCats()) {
-                if (cat == null)
-                    cats.add(null);
-                else
-                    cats.add(new CatItem(cat));
-            }
-
-            return cats;
-        });
-    }
-
-    @Override
-    public Optional<CatItem> getCatByID(long id) {
-        return inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-            var cat = catRepository.getCatById(id);
-
+        List<CatItem> cats = new ArrayList<>();
+        for (var cat : catRepository.findAll()) {
             if (cat == null)
-                return Optional.empty();
+                cats.add(null); // TODO why?
             else
-                return Optional.of(new CatItem(cat));
-        });
+                cats.add(new CatItem(cat));
+        }
+
+        return cats;
+    }
+
+    @Override
+    @Transactional
+    public Optional<CatItem> getCatByID(long id) {
+        var cat = catRepository.findById(id);
+
+        if (cat.isEmpty())
+            return Optional.empty();
+        else
+            return Optional.of(new CatItem(cat.get()));
     }
 
     /**
      * @throws UnknownEntityIdException if cats with given IDs are not present in repository
      * **/
     @Override
+    @Transactional
     public boolean areFriends(long firstCatID, long secondCatID) {
-        return inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-            var firstCat = checkCatPersistence(catRepository, firstCatID);
-            var secondCat = checkCatPersistence(catRepository, secondCatID);
+        var firstCat = checkCatPersistence(catRepository, firstCatID);
+        var secondCat = checkCatPersistence(catRepository, secondCatID);
 
-            return firstCat.getFriends().contains(secondCat);
-        });
+        return firstCat.getFriends().contains(secondCat);
     }
 
     /**
      * @throws UnknownEntityIdException if cats with given IDs are not present in repository
      * **/
     @Override
+    @Transactional
     public void makeFriendship(long firstCatID, long secondCatID) {
-        inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-            var firstCat = checkCatPersistence(catRepository, firstCatID);
-            var secondCat = checkCatPersistence(catRepository, secondCatID);
+        var firstCat = checkCatPersistence(catRepository, firstCatID);
+        var secondCat = checkCatPersistence(catRepository, secondCatID);
 
-            if (firstCat.getFriends().contains(secondCat))
-                return null;
+        if (firstCat.getFriends().contains(secondCat))
+            return;
 
-            firstCat.getFriends().add(secondCat);
-            secondCat.getFriends().add(firstCat);
+        firstCat.getFriends().add(secondCat);
+        secondCat.getFriends().add(firstCat);
 
-            catRepository.updateFriendship(firstCat, secondCat);
-
-            return null;
-        });
+        catRepository.saveAll(Arrays.asList(firstCat, secondCat));
     }
 
     /**
      * @throws UnknownEntityIdException if cats with given IDs are not present in repository
      * **/
     @Override
+    @Transactional
     public void destroyFriendship(long firstCatID, long secondCatID) {
-        inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-            var firstCat = checkCatPersistence(catRepository, firstCatID);
-            var secondCat = checkCatPersistence(catRepository, secondCatID);
+        var firstCat = checkCatPersistence(catRepository, firstCatID);
+        var secondCat = checkCatPersistence(catRepository, secondCatID);
 
-            if (!firstCat.getFriends().contains(secondCat))
-                return null;
+        if (!firstCat.getFriends().contains(secondCat))
+            return;
 
-            firstCat.getFriends().remove(secondCat);
-            secondCat.getFriends().remove(firstCat);
+        firstCat.getFriends().remove(secondCat);
+        secondCat.getFriends().remove(firstCat);
 
-            catRepository.updateFriendship(firstCat, secondCat);
-
-            return null;
-        });
+        catRepository.saveAll(Arrays.asList(firstCat, secondCat));
     }
 
     @Override
+    @Transactional
     public List<CatItem> getFriends(long id) {
-        return inTransaction(entityManager -> {
-            catRepository.setEntityManager(entityManager);
-            var cat = checkCatPersistence(catRepository, id);
+        var cat = checkCatPersistence(catRepository, id);
 
-            List<CatItem> friends = new ArrayList<>();
-            for (var friend : cat.getFriends())
-                friends.add(new CatItem(friend));
+        List<CatItem> friends = new ArrayList<>();
+        for (var friend : cat.getFriends())
+            friends.add(new CatItem(friend));
 
-            return friends;
-        });
+        return friends;
     }
 
     private Cat checkCatPersistence(CatRepository repository, long id) {
-        var cat = repository.getCatById(id);
-        if (cat == null)
+        var cat = repository.findById(id);
+        if (cat.isEmpty())
             throw new UnknownEntityIdException("Cat with ID=%s does not exist".formatted(id));
 
-        return cat;
+        return cat.get();
     }
 }
