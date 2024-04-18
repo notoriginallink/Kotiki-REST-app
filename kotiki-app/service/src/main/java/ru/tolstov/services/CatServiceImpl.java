@@ -1,16 +1,14 @@
 package ru.tolstov.services;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Service;
 import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
-import ru.tolstov.services.dto.CatItem;
+import ru.tolstov.services.dto.CatDto;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -50,13 +48,13 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public List<CatItem> getAllCats() {
-        List<CatItem> cats = new ArrayList<>();
+    public List<CatDto> getAllCats() {
+        List<CatDto> cats = new ArrayList<>();
         for (var cat : catRepository.findAll()) {
             if (cat == null)
                 cats.add(null); // TODO why?
             else
-                cats.add(new CatItem(cat));
+                cats.add(new CatDto(cat));
         }
 
         return cats;
@@ -64,13 +62,13 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public Optional<CatItem> getCatByID(long id) {
+    public Optional<CatDto> getCatByID(long id) {
         var cat = catRepository.findById(id);
 
         if (cat.isEmpty())
             return Optional.empty();
         else
-            return Optional.of(new CatItem(cat.get()));
+            return Optional.of(new CatDto(cat.get()));
     }
 
     /**
@@ -123,12 +121,12 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public List<CatItem> getFriends(long id) {
+    public List<CatDto> getFriends(long id) {
         var cat = checkCatPersistence(catRepository, id);
 
-        List<CatItem> friends = new ArrayList<>();
+        List<CatDto> friends = new ArrayList<>();
         for (var friend : cat.getFriends())
-            friends.add(new CatItem(friend));
+            friends.add(new CatDto(friend));
 
         return friends;
     }

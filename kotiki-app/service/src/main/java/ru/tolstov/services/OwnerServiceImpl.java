@@ -1,17 +1,17 @@
 package ru.tolstov.services;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
-import ru.tolstov.services.dto.OwnerItem;
+import ru.tolstov.services.dto.OwnerDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -33,10 +33,10 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
-    public List<OwnerItem> getAllOwners() {
-        List<OwnerItem> owners = new ArrayList<>();
+    public List<OwnerDto> getAllOwners() {
+        List<OwnerDto> owners = new ArrayList<>();
         for (var owner : ownerRepository.findAll())
-            owners.add(new OwnerItem(owner));
+            owners.add(new OwnerDto(owner));
 
         return owners;
     }
@@ -52,5 +52,14 @@ public class OwnerServiceImpl implements OwnerService {
             throw new RuntimeException("Cant remove owner while he has cats");
 
         ownerRepository.delete(owner.get());
+    }
+
+    @Override
+    public Optional<OwnerDto> getById(long id) {
+        var owner = ownerRepository.findById(id);
+        if (owner.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(new OwnerDto(owner.get()));
     }
 }

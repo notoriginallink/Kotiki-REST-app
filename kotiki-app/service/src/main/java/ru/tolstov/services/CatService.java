@@ -1,8 +1,7 @@
 package ru.tolstov.services;
 
-import ru.tolstov.models.Cat;
 import ru.tolstov.models.CatColor;
-import ru.tolstov.services.dto.CatItem;
+import ru.tolstov.services.dto.CatDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,13 +27,13 @@ public interface CatService {
      * Gets all cats that are currently present in the repository
      * @return List of cats
      * **/
-    List<CatItem> getAllCats();
+    List<CatDto> getAllCats();
     /**
      * Finds in repository cat with given ID
      * @param id cat's ID
      * @return an Optional describing the cat with given ID, or empty Optional if cat with this ID is not present
      * **/
-    Optional<CatItem> getCatByID(long id);
+    Optional<CatDto> getCatByID(long id);
     /**
      * Checks if two cats have a friendship. Doesn't matter in which order IDs are given
      * @param firstCatID ID of first cat
@@ -59,5 +58,5 @@ public interface CatService {
      * @param id cat's ID
      * @return {@code List} with cats
      * **/
-    List<CatItem> getFriends(long id);
+    List<CatDto> getFriends(long id);
 }

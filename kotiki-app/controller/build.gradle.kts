@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-//    implementation(":kotiki-app:service:")
+    implementation(project(mapOf("path" to ":kotiki-app:service")))
 }
 
 tasks.test {
