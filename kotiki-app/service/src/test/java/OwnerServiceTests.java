@@ -1,17 +1,12 @@
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import ru.tolstov.models.Cat;
-import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.OwnerServiceImpl;
-import ru.tolstov.services.dto.OwnerItem;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

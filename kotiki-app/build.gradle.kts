@@ -25,6 +25,7 @@ dependencies {
     implementation(project(":kotiki-app:dao:"))
     implementation(project(":kotiki-app:service:"))
     implementation(project(":kotiki-app:service:models"))
+    implementation(project(":kotiki-app:controller:"))
 }
 
 allprojects {

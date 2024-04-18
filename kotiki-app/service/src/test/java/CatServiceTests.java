@@ -4,18 +4,12 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import ru.tolstov.models.Cat;
-import ru.tolstov.models.CatColor;
-import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.CatServiceImpl;
-import ru.tolstov.services.UnknownEntityIdException;
-import ru.tolstov.services.dto.CatItem;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
