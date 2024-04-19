@@ -1,61 +1,50 @@
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import ru.tolstov.models.Cat;
+import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.OwnerServiceImpl;
+import ru.tolstov.services.dto.OwnerDto;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OwnerServiceTests {
-    private static OwnerRepository ownerRepository;
-    private static EntityManagerFactory entityManagerFactory;
-    @Spy
-    List<Cat> cats;
+    @Mock
+    private OwnerRepository ownerRepository;
+
+    @InjectMocks
     private OwnerServiceImpl ownerService;
+
+    private Owner testOwner;
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
 
-    }
+        testOwner = new Owner();
+        testOwner.setId(1);
+        testOwner.setLastName("Aboba");
+        testOwner.setFirstName("Amogus");
+        testOwner.setCats(new ArrayList<>());
 
-    @BeforeAll
-    public static void initDB() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("kotiki-test-database");
-    }
-
-    @AfterAll
-    public static void closeDB() {
-        entityManagerFactory.close();;
+        Mockito.when(ownerRepository.findById(1L)).thenReturn(Optional.ofNullable(testOwner));
     }
 
     @Test
-    void createOwner_ShouldBeSuccessful() {
+    public void getById_WhenPresent_ShouldReturnDto() {
+        var expectedDto = new OwnerDto(testOwner);
 
-    }
+        var actualOptional = ownerService.getById(1L);
+        assertTrue(actualOptional.isPresent());
 
-    @Test
-    void getAllOwners_ShouldBeSuccessful() {
+        var actualDto = actualOptional.get();
 
-    }
-
-    @Test
-    void removeOwner_WhenNotInRepository_NothingShouldHappen() {
-
-    }
-
-    @Test
-    void removeOwner_WhenHasCat_ShouldThrowException() {
-
-    }
-
-    @Test
-    void removeOwner_WhenHasNoCats_ShouldBeSuccessful() {
-
+        assertEquals(expectedDto, actualDto);
     }
 }

@@ -1,130 +1,65 @@
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import ru.tolstov.models.Cat;
+import ru.tolstov.models.CatColor;
+import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.CatServiceImpl;
+import ru.tolstov.services.dto.CatDto;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CatServiceTests {
-    private static CatRepository catRepository;
-    private static OwnerRepository ownerRepository;
-    private static EntityManagerFactory entityManagerFactory;
-    private static CatServiceImpl catService;
+    @Mock
+    private CatRepository catRepository;
+    @Mock
+    private OwnerRepository ownerRepository;
+    @InjectMocks
+    private CatServiceImpl catService;
+
+    private Owner testOwner;
+    private Cat testCat;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
 
-    }
+        testOwner = new Owner();
+        testOwner.setId(1);
+        testOwner.setLastName("Aboba");
+        testOwner.setFirstName("Amogus");
+        testOwner.setCats(new ArrayList<>());
 
-    @BeforeAll
-    public static void initDB() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("kotiki-test-database");
-    }
+        testCat = new Cat();
+        testCat.setId(1);
+        testCat.setName("Biba");
+        testCat.setBreed("Siamese");
+        testCat.setColor(CatColor.ORANGE);
+        testCat.setOwner(testOwner);
+        testCat.setFriends(new HashSet<>());
 
-    @AfterAll
-    public static void closeDB() {
-        entityManagerFactory.close();
+        Mockito.when(ownerRepository.findById(1L)).thenReturn(Optional.ofNullable(testOwner));
+        Mockito.when(catRepository.findById(1L)).thenReturn(Optional.ofNullable(testCat));
     }
-
     @Test
-    void addCat_ShouldBeSuccessful() {
-    }
+    public void getCatById_WhenPresent_ShouldReturnDto() {
+        var expectedDto = new CatDto(testCat);
 
-    @Test
-    void addCat_WhenOwnerIDNotValid_ShouldThrowExceptionUnknownEntityID() {
+        var actualOptional = catService.getCatByID(1L);
+        assertTrue(actualOptional.isPresent());
 
-    }
+        var actualDto = actualOptional.get();
 
-    @Test
-    void removeCat_WhenPresentInRepository_ShouldBeSuccessful() {
-
-    }
-
-    @Test
-    void removeCat_WhenNotPresentInRepository_NothingShouldHappen() {
-
-    }
-
-    @Test
-    void getAllCats_ShouldBeSuccessful() {
-
-    }
-
-    @Test
-    void getCatByID_WhenInRepository_ShouldReturnNotEmptyOptional() {
-
-    }
-
-    @Test
-    void getCatByID_WhenNotInRepository_ShouldReturnEmptyOptional() {
-
-    }
-
-    @ParameterizedTest
-    @MethodSource("catsProviderFactory")
-    void makeFriendship_WhenBothCatsInRepository(long catID1, Cat cat1, long catID2, Cat cat2, boolean areFriends) {
-
-    }
-
-    @ParameterizedTest
-    @MethodSource("catsProviderFactory")
-    void destroyFriendship_WhenBothCatsInRepository(long catID1, Cat cat1, long catID2, Cat cat2, boolean areFriends) {
-
-    }
-
-    static Stream<Object> catsProviderFactory() {
-        long catID1 = 1;
-        long catID2 = 2;
-        long catID3 = 3;
-
-        Cat cat1 = new Cat();
-        cat1.setId(catID1);
-        cat1.setFriends(new HashSet<>());
-
-        Cat cat2 = new Cat();
-        cat2.setId(catID2);
-        cat2.setFriends(new HashSet<>());
-
-        Cat cat3 = new Cat();
-        cat3.setId(catID3);
-        cat3.setFriends(new HashSet<>());
-
-        // cats with ID=1 and ID=2 are friends
-        cat1.getFriends().add(cat2);
-        cat2.getFriends().add(cat1);
-
-        // cats with ID=1 and ID=3 are friends
-        cat1.getFriends().add(cat3);
-        cat3.getFriends().add(cat1);
-
-        // cats with ID=2 and ID=3 are not friends
-
-        Stream<Arguments> s1 = Stream.of(Arguments.of(catID1, cat1, catID2, cat2, true));
-        Stream<Arguments> s2 = Stream.of(Arguments.of(catID1, cat1, catID3, cat3, true));
-        Stream<Arguments> s3 = Stream.of(Arguments.of(catID2, cat2, catID3, cat3, false));
-
-        return Stream.concat(Stream.concat(s1, s2), s3);
-    }
-
-    @Test
-    void getFriends_ShouldBeSuccessful() {
-
-    }
-
-    @Test
-    void friendshipMethods_WhenCatsAreNotInRepository_ShouldThrowException() {
-
+        assertEquals(expectedDto, actualDto);
     }
 }
