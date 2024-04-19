@@ -1,7 +1,6 @@
 rootProject.name = "is-tech-labs"
 
 include("lab1-banks")
-include("lab1-application")
 include("lab1-banks:lab1-application")
 findProject(":lab1-banks:lab1-application")?.name = "lab1-application"
 include("lab1-banks:lab1-data")

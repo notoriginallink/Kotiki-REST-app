@@ -64,9 +64,10 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+tasks.getByName("bootJar") {
     enabled = false
 }
-tasks.getByName<Jar>("jar"){
+
+tasks.getByName("jar") {
     enabled = true
 }
