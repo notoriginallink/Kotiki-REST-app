@@ -44,15 +44,16 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
-    public void removeOwner(long ownerID) throws RuntimeException {
+    public boolean removeOwner(long ownerID) throws RuntimeException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
-            return;
+            return false;
 
         if (!owner.get().getCats().isEmpty())
             throw new RuntimeException("Cant remove owner while he has cats");
 
         ownerRepository.delete(owner.get());
+        return true;
     }
 
     @Override

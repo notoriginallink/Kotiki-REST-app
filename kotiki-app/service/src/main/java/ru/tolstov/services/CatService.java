@@ -17,12 +17,14 @@ public interface CatService {
      * @param ownerID id of the cat's owner
      * @return ID of created cat
      * **/
-    long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID);
+    long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException;
     /**
      * Removes the cat from repository. If cat with this ID is not present in repository, then nothing happens
+     *
      * @param id ID of a cat to be removed
-     * **/
-    void removeCat(long id);
+     * @return true if cat was deleted, false otherwise
+     **/
+    boolean removeCat(long id);
     /**
      * Gets all cats that are currently present in the repository
      * @return List of cats
@@ -40,23 +42,27 @@ public interface CatService {
      * @param secondCatID ID of second cat
      * @return true if cats are friends or false if they are not
      * **/
-    boolean areFriends(long firstCatID, long secondCatID);
+    boolean areFriends(long firstCatID, long secondCatID) throws UnknownEntityIdException;
     /**
      * Creates friendship between two cats. If cats are already friends then nothing happens
      * @param firstCatID ID of first cat
      * @param secondCatID ID of second cat
      * **/
-    void makeFriendship(long firstCatID, long secondCatID);
+    void makeFriendship(long firstCatID, long secondCatID) throws UnknownEntityIdException;
     /**
      * Destroys friendship between two cats. If cats are not friends then nothing happens
      * @param firstCatID ID of first cat
      * @param secondCatID ID of second cat
      * **/
-    void destroyFriendship(long firstCatID, long secondCatID);
+    void destroyFriendship(long firstCatID, long secondCatID) throws UnknownEntityIdException;
     /**
      * returns List containing all friend of cat with provided ID
      * @param id cat's ID
      * @return {@code List} with cats
      * **/
-    List<CatDto> getFriends(long id);
+    List<CatDto> getFriends(long id) throws UnknownEntityIdException;
+
+    List<CatDto> findByColor(CatColor color);
+    List<CatDto> findByBreed(String breed);
+    List<CatDto> findByBirthYear(int year);
 }

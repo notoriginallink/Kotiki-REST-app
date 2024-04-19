@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation(project(mapOf("path" to ":kotiki-app:service")))
+    implementation(project(mapOf("path" to ":kotiki-app:service:models")))
 }
 
 tasks.test {

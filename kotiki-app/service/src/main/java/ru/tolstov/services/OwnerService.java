@@ -24,9 +24,11 @@ public interface OwnerService {
     List<OwnerDto> getAllOwners();
     /**
      * Removes owner from repository. If owner with this ID is not present in repository then nothing happens
+     *
      * @param ownerID owner's ID
-     **/
-    void removeOwner(long ownerID);
+     * @return true if owner was deleted, or false otherwise
+     */
+    boolean removeOwner(long ownerID);
 
     Optional<OwnerDto> getById(long id);
 

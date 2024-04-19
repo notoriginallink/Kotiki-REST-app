@@ -23,7 +23,7 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) {
+    public long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
             throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
@@ -41,23 +41,19 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public void removeCat(long id) {
+    public boolean removeCat(long id) {
         var cat = catRepository.findById(id);
-        cat.ifPresent(catRepository::delete);
+        if (cat.isEmpty())
+            return false;
+
+        catRepository.delete(cat.get());
+        return true;
     }
 
     @Override
     @Transactional
     public List<CatDto> getAllCats() {
-        List<CatDto> cats = new ArrayList<>();
-        for (var cat : catRepository.findAll()) {
-            if (cat == null)
-                cats.add(null); // TODO why?
-            else
-                cats.add(new CatDto(cat));
-        }
-
-        return cats;
+        return catRepository.findAll().stream().map(CatDto::new).toList();
     }
 
     @Override
@@ -76,7 +72,7 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     @Transactional
-    public boolean areFriends(long firstCatID, long secondCatID) {
+    public boolean areFriends(long firstCatID, long secondCatID) throws UnknownEntityIdException {
         var firstCat = checkCatPersistence(catRepository, firstCatID);
         var secondCat = checkCatPersistence(catRepository, secondCatID);
 
@@ -88,7 +84,7 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     @Transactional
-    public void makeFriendship(long firstCatID, long secondCatID) {
+    public void makeFriendship(long firstCatID, long secondCatID) throws UnknownEntityIdException {
         var firstCat = checkCatPersistence(catRepository, firstCatID);
         var secondCat = checkCatPersistence(catRepository, secondCatID);
 
@@ -106,7 +102,7 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     @Transactional
-    public void destroyFriendship(long firstCatID, long secondCatID) {
+    public void destroyFriendship(long firstCatID, long secondCatID) throws UnknownEntityIdException {
         var firstCat = checkCatPersistence(catRepository, firstCatID);
         var secondCat = checkCatPersistence(catRepository, secondCatID);
 
@@ -121,7 +117,7 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public List<CatDto> getFriends(long id) {
+    public List<CatDto> getFriends(long id) throws UnknownEntityIdException {
         var cat = checkCatPersistence(catRepository, id);
 
         List<CatDto> friends = new ArrayList<>();
@@ -129,6 +125,21 @@ public class CatServiceImpl implements CatService {
             friends.add(new CatDto(friend));
 
         return friends;
+    }
+
+    @Override
+    public List<CatDto> findByColor(CatColor color) {
+        return catRepository.findByColor(color).stream().map(CatDto::new).toList();
+    }
+
+    @Override
+    public List<CatDto> findByBreed(String breed) {
+        return catRepository.findByBreedIgnoreCase(breed).stream().map(CatDto::new).toList();
+    }
+
+    @Override
+    public List<CatDto> findByBirthYear(int year) {
+        return catRepository.findByBirthYear(year).stream().map(CatDto::new).toList();
     }
 
     private Cat checkCatPersistence(CatRepository repository, long id) {
