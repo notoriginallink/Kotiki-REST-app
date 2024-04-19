@@ -52,4 +52,14 @@ public class OwnerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @DeleteMapping("id{id}/delete")
+    public ResponseEntity<?> delete(@PathVariable long id) {
+        try {
+            ownerService.removeOwner(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

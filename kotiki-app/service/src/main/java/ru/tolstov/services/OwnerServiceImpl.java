@@ -44,7 +44,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
-    public void removeOwner(long ownerID) {
+    public void removeOwner(long ownerID) throws RuntimeException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
             return;
