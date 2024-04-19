@@ -9,12 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CatRepository extends JpaRepository<Cat, Long> {
-    List<Cat> findByColor(CatColor color);
-    List<Cat> findByBreedIgnoreCase(String breed);
-    @Query(value = "SELECT * FROM kotiki.cats WHERE EXTRACT(YEAR FROM birthdate) = ?1", nativeQuery = true)
-    List<Cat> findByBirthYear(int year);
-
-    // Experimental method
     @Query(value = """
             SELECT * FROM kotiki.cats
             WHERE (?1 IS NULL OR color = ?1)

@@ -63,28 +63,4 @@ public class CatController {
 
         return ResponseEntity.notFound().build();
     }
-
-    /**
-     * @deprecated
-     * **/
-    @GetMapping("all/color={color}")
-    public ResponseEntity<?> allByColor(@PathVariable CatColor color) {
-        return ResponseEntity.ok(catService.findByColor(color));
-    }
-
-    /**
-     * @deprecated
-     * **/
-    @GetMapping("all/breed={breed}")
-    public ResponseEntity<?> allByBreed(@PathVariable String breed) {
-        return ResponseEntity.ok(catService.findByBreed(breed));
-    }
-
-    /**
-     * @deprecated
-     * **/
-    @GetMapping("all/year={year}")
-    public ResponseEntity<?> allByYear(@PathVariable int year) {
-        return ResponseEntity.ok(catService.findByBirthYear(year));
-    }
 }

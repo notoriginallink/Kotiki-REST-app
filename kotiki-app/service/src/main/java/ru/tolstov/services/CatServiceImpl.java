@@ -127,22 +127,6 @@ public class CatServiceImpl implements CatService {
         return friends;
     }
 
-    @Override
-    public List<CatDto> findByColor(CatColor color) {
-        return catRepository.findByColor(color).stream().map(CatDto::new).toList();
-    }
-
-    @Override
-    public List<CatDto> findByBreed(String breed) {
-        return catRepository.findByBreedIgnoreCase(breed).stream().map(CatDto::new).toList();
-    }
-
-    @Override
-    public List<CatDto> findByBirthYear(int year) {
-        return catRepository.findByBirthYear(year).stream().map(CatDto::new).toList();
-    }
-
-    // Experimental method
     public List<CatDto> findFiltered(CatColor color, String breed, Integer year) {
         String color_string = (color == null ? null : color.toString());
         return catRepository.findFiltered(color_string, breed, year).stream().map(CatDto::new).toList();
