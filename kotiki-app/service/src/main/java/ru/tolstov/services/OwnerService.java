@@ -1,5 +1,6 @@
 package ru.tolstov.services;
 
+import ru.tolstov.services.dto.CatDto;
 import ru.tolstov.services.dto.OwnerDto;
 
 import java.time.LocalDate;
@@ -28,4 +29,6 @@ public interface OwnerService {
     void removeOwner(long ownerID);
 
     Optional<OwnerDto> getById(long id);
+
+    List<CatDto> getAllCats(long id);
 }

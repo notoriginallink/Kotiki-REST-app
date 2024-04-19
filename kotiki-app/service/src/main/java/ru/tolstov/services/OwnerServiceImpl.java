@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
+import ru.tolstov.services.dto.CatDto;
 import ru.tolstov.services.dto.OwnerDto;
 
 import java.time.LocalDate;
@@ -61,5 +62,14 @@ public class OwnerServiceImpl implements OwnerService {
             return Optional.empty();
 
         return Optional.of(new OwnerDto(owner.get()));
+    }
+
+    @Override
+    public List<CatDto> getAllCats(long id) throws UnknownEntityIdException {
+        var owner = ownerRepository.findById(id);
+        if (owner.isEmpty())
+            throw new UnknownEntityIdException("Owner with ID=%s not found");
+
+        return owner.get().getCats().stream().map(CatDto::new).toList();
     }
 }
