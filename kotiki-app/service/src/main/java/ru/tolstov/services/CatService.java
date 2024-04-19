@@ -62,10 +62,18 @@ public interface CatService {
      * **/
     List<CatDto> getFriends(long id) throws UnknownEntityIdException;
 
+    /**
+     * @deprecated
+     * **/
     List<CatDto> findByColor(CatColor color);
+    /**
+     * @deprecated
+     * **/
     List<CatDto> findByBreed(String breed);
+    /**
+     * @deprecated
+     * **/
     List<CatDto> findByBirthYear(int year);
 
-    // Experimental method
     List<CatDto> findFiltered(CatColor color, String breed, Integer year);
 }
