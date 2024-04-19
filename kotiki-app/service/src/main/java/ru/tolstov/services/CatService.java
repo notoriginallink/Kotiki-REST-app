@@ -65,4 +65,7 @@ public interface CatService {
     List<CatDto> findByColor(CatColor color);
     List<CatDto> findByBreed(String breed);
     List<CatDto> findByBirthYear(int year);
+
+    // Experimental method
+    List<CatDto> findFiltered(CatColor color, String breed, Integer year);
 }

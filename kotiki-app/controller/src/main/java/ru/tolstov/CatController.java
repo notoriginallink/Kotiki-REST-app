@@ -17,6 +17,14 @@ public class CatController {
     @Autowired
     private final CatService catService;
 
+    @GetMapping("filter")
+    public ResponseEntity<List<CatDto>> filter(
+            @RequestParam(required = false) CatColor color,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) Integer year
+    ) {
+        return ResponseEntity.ok(catService.findFiltered(color, breed, year));
+    }
     @GetMapping("all")
     public ResponseEntity<List<CatDto>> getAll() {
         return ResponseEntity.ok(catService.getAllCats());
@@ -56,18 +64,18 @@ public class CatController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("all/color={color}")
-    public ResponseEntity<?> allByColor(@PathVariable CatColor color) {
-        return ResponseEntity.ok(catService.findByColor(color));
-    }
-
-    @GetMapping("all/breed={breed}")
-    public ResponseEntity<?> allByBreed(@PathVariable String breed) {
-        return ResponseEntity.ok(catService.findByBreed(breed));
-    }
-
-    @GetMapping("all/year={year}")
-    public ResponseEntity<?> allByYear(@PathVariable int year) {
-        return ResponseEntity.ok(catService.findByBirthYear(year));
-    }
+//    @GetMapping("all/color={color}")
+//    public ResponseEntity<?> allByColor(@PathVariable CatColor color) {
+//        return ResponseEntity.ok(catService.findByColor(color));
+//    }
+//
+//    @GetMapping("all/breed={breed}")
+//    public ResponseEntity<?> allByBreed(@PathVariable String breed) {
+//        return ResponseEntity.ok(catService.findByBreed(breed));
+//    }
+//
+//    @GetMapping("all/year={year}")
+//    public ResponseEntity<?> allByYear(@PathVariable int year) {
+//        return ResponseEntity.ok(catService.findByBirthYear(year));
+//    }
 }

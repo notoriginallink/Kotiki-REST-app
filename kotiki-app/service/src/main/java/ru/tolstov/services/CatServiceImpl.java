@@ -142,6 +142,12 @@ public class CatServiceImpl implements CatService {
         return catRepository.findByBirthYear(year).stream().map(CatDto::new).toList();
     }
 
+    // Experimental method
+    public List<CatDto> findFiltered(CatColor color, String breed, Integer year) {
+        String color_string = (color == null ? null : color.toString());
+        return catRepository.findFiltered(color_string, breed, year).stream().map(CatDto::new).toList();
+    }
+
     private Cat checkCatPersistence(CatRepository repository, long id) {
         var cat = repository.findById(id);
         if (cat.isEmpty())
