@@ -27,18 +27,14 @@ public class CatController {
 
     @PostMapping("")
     public ResponseEntity<?> save(@RequestBody CatDto cat) {
-        try {
-            long id = catService.addCat(
-                    cat.getName(),
-                    cat.getBirthdate(),
-                    cat.getBreed(),
-                    cat.getColor(),
-                    cat.getOwner()
-            );
-            return ResponseEntity.ok(id);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        long id = catService.addCat(
+                cat.getName(),
+                cat.getBirthdate(),
+                cat.getBreed(),
+                cat.getColor(),
+                cat.getOwner()
+        );
+        return ResponseEntity.ok(id);
     }
 
     @GetMapping("/{id}")
