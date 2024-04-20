@@ -66,7 +66,7 @@ public class CatController {
     }
 
     @PostMapping("/{id}/friends")
-    public ResponseEntity<?> makeFriends(
+    public ResponseEntity<?> makeFriend(
             @PathVariable long id,
             @RequestParam long friendId
     ) {
