@@ -17,7 +17,6 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
-    @Autowired
     private final OwnerRepository ownerRepository;
 
     @Override

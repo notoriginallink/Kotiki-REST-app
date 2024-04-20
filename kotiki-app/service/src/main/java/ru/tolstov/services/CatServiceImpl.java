@@ -16,9 +16,7 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 public class CatServiceImpl implements CatService {
-    @Autowired
     private final CatRepository catRepository;
-    @Autowired
     private final OwnerRepository ownerRepository;
 
     @Override
