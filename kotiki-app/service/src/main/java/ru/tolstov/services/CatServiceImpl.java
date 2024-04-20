@@ -87,7 +87,7 @@ public class CatServiceImpl implements CatService {
         var secondCat = checkCatPersistence(catRepository, secondCatID);
 
         if (firstCat.getFriends().contains(secondCat))
-            return;
+            throw new FriendshipException("Cats %s and %s are already friends".formatted(firstCatID, secondCatID));
 
         firstCat.getFriends().add(secondCat);
         secondCat.getFriends().add(firstCat);
@@ -105,7 +105,7 @@ public class CatServiceImpl implements CatService {
         var secondCat = checkCatPersistence(catRepository, secondCatID);
 
         if (!firstCat.getFriends().contains(secondCat))
-            return;
+            throw new FriendshipException("Cats %s and %s are not friends".formatted(firstCatID, secondCatID));
 
         firstCat.getFriends().remove(secondCat);
         secondCat.getFriends().remove(firstCat);

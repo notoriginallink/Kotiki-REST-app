@@ -61,12 +61,8 @@ public class CatController {
 
     @GetMapping("/{id}/friends")
     public ResponseEntity<?> findFriends(@PathVariable long id) {
-        try {
-            var friends = catService.getFriends(id);
-            return ResponseEntity.ok(friends);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        var friends = catService.getFriends(id);
+        return ResponseEntity.ok(friends);
     }
 
     @PostMapping("/{id}/friends")
@@ -74,16 +70,8 @@ public class CatController {
             @PathVariable long id,
             @RequestParam long friendId
     ) {
-        try {
-            boolean areFriends = catService.areFriends(id, friendId);
-            if (areFriends)
-                return ResponseEntity.badRequest().body("Are already friends");
-
-            catService.makeFriendship(id, friendId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        catService.makeFriendship(id, friendId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("{id}/friends")
@@ -91,15 +79,7 @@ public class CatController {
             @PathVariable long id,
             @RequestParam long friendId
     ) {
-        try {
-            boolean areFriends = catService.areFriends(id, friendId);
-            if (!areFriends)
-                return ResponseEntity.badRequest().body("Are not friends");
-
-            catService.destroyFriendship(id, friendId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        catService.destroyFriendship(id, friendId);
+        return ResponseEntity.ok().build();
     }
 }

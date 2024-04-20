@@ -22,15 +22,11 @@ public class OwnerController {
 
     @PostMapping("")
     public ResponseEntity<?> save(@RequestBody OwnerDto owner) {
-        try {
-            var id = ownerService.createOwner(
-                    owner.getFirstName(),
-                    owner.getLastName(),
-                    owner.getBirthdate());
-            return ResponseEntity.ok(id);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        var id = ownerService.createOwner(
+                owner.getFirstName(),
+                owner.getLastName(),
+                owner.getBirthdate());
+        return ResponseEntity.ok(id);
     }
 
     @GetMapping("/{id}")
@@ -44,21 +40,13 @@ public class OwnerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
-        try {
-            ownerService.removeOwner(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        ownerService.removeOwner(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/cats")
     public ResponseEntity<?> getCats(@PathVariable long id) {
-        try {
-            var cats = ownerService.getAllCats(id);
-            return ResponseEntity.ok(cats);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        var cats = ownerService.getAllCats(id);
+        return ResponseEntity.ok(cats);
     }
 }
