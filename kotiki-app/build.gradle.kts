@@ -50,13 +50,7 @@ allprojects {
         implementation("org.flywaydb:flyway-core")
         runtimeOnly("org.flywaydb:flyway-database-postgresql:10.11.0")
 
-
-        // JUnit
-        testImplementation(platform("org.junit:junit-bom:5.9.1"))
-        testImplementation("org.junit.jupiter:junit-jupiter")
-
-        // https://mvnrepository.com/artifact/org.mockito/mockito-core
-        testImplementation("org.mockito:mockito-core:5.11.0")
+        testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     }
 }
 
