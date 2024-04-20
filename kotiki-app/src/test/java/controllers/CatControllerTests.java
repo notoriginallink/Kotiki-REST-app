@@ -55,7 +55,7 @@ public class CatControllerTests {
     public void getAll_thenStatus200() throws Exception {
         int expectedSize = 5;
 
-        mvc.perform(get("/cats/all")
+        mvc.perform(get("/cats")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -66,7 +66,7 @@ public class CatControllerTests {
     @Test
     public void getById_whenExists_thenStatus200() throws Exception {
         long id = 2;
-        mvc.perform(get("/cats/id%s".formatted(id))
+        mvc.perform(get("/cats/%s".formatted(id))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Stepa"));
@@ -76,7 +76,7 @@ public class CatControllerTests {
     public void getFiltered_ByColorAndBreed_thenStatus200() throws Exception {
         CatColor color = CatColor.GREY;
         String breed = "Siamese";
-        mvc.perform(get("/cats/filter?color=%s&breed=%s".formatted(color, breed))
+        mvc.perform(get("/cats?color=%s&breed=%s".formatted(color, breed))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("[0].color", is(color.toString())))
@@ -96,7 +96,7 @@ public class CatControllerTests {
         dto.setOwner(1L);
         String body = mapper.writeValueAsString(dto);
 
-        mvc.perform(post("/cats/save")
+        mvc.perform(post("/cats")
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -115,7 +115,7 @@ public class CatControllerTests {
         var initialOptional = catRepository.findById(id);
         assertTrue(initialOptional.isPresent());
 
-        mvc.perform(delete("/cats/id%s/delete".formatted(id))
+        mvc.perform(delete("/cats/%s".formatted(id))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

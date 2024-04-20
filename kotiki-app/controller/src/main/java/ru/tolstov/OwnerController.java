@@ -13,24 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/owners")
 public class OwnerController {
-    @Autowired
     private final OwnerService ownerService;
 
-    @GetMapping("all")
+    @GetMapping("")
     public ResponseEntity<List<OwnerDto>> getAll() {
         return ResponseEntity.ok(ownerService.getAllOwners());
     }
 
-    @GetMapping("/id{id}")
-    public ResponseEntity<OwnerDto> getById(@PathVariable long id) {
-        var owner = ownerService.getById(id);
-        if (owner.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(owner.get());
-    }
-
-    @PostMapping("save")
+    @PostMapping("")
     public ResponseEntity<?> save(@RequestBody OwnerDto owner) {
         try {
             var id = ownerService.createOwner(
@@ -43,21 +33,30 @@ public class OwnerController {
         }
     }
 
-    @GetMapping("id{id}/cats")
-    public ResponseEntity<?> getCats(@PathVariable long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<OwnerDto> getById(@PathVariable long id) {
+        var owner = ownerService.getById(id);
+        if (owner.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(owner.get());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable long id) {
         try {
-            var cats = ownerService.getAllCats(id);
-            return ResponseEntity.ok(cats);
+            ownerService.removeOwner(id);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @DeleteMapping("id{id}/delete")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    @GetMapping("/{id}/cats")
+    public ResponseEntity<?> getCats(@PathVariable long id) {
         try {
-            ownerService.removeOwner(id);
-            return ResponseEntity.ok().build();
+            var cats = ownerService.getAllCats(id);
+            return ResponseEntity.ok(cats);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

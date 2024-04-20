@@ -14,10 +14,9 @@ import java.util.List;
 @RequestMapping("/cats")
 @AllArgsConstructor
 public class CatController {
-    @Autowired
     private final CatService catService;
 
-    @GetMapping("filter")
+    @GetMapping("")
     public ResponseEntity<List<CatDto>> filter(
             @RequestParam(required = false) CatColor color,
             @RequestParam(required = false) String breed,
@@ -25,21 +24,8 @@ public class CatController {
     ) {
         return ResponseEntity.ok(catService.findFiltered(color, breed, year));
     }
-    @GetMapping("all")
-    public ResponseEntity<List<CatDto>> getAll() {
-        return ResponseEntity.ok(catService.getAllCats());
-    }
 
-    @GetMapping("/id{id}")
-    public ResponseEntity<CatDto> getById(@PathVariable long id) {
-        var cat = catService.getCatByID(id);
-        if (cat.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(cat.get());
-    }
-
-    @PostMapping("save")
+    @PostMapping("")
     public ResponseEntity<?> save(@RequestBody CatDto cat) {
         try {
             long id = catService.addCat(
@@ -55,7 +41,16 @@ public class CatController {
         }
     }
 
-    @DeleteMapping("id{id}/delete")
+    @GetMapping("/{id}")
+    public ResponseEntity<CatDto> getById(@PathVariable long id) {
+        var cat = catService.getCatByID(id);
+        if (cat.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(cat.get());
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
         var result = catService.removeCat(id);
         if (result)
@@ -64,7 +59,7 @@ public class CatController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("id{id}/friends")
+    @GetMapping("/{id}/friends")
     public ResponseEntity<?> findFriends(@PathVariable long id) {
         try {
             var friends = catService.getFriends(id);
@@ -74,10 +69,10 @@ public class CatController {
         }
     }
 
-    @PostMapping("id{id}/make-friend{friendId}")
+    @PostMapping("/{id}/friends")
     public ResponseEntity<?> makeFriends(
             @PathVariable long id,
-            @PathVariable long friendId
+            @RequestParam long friendId
     ) {
         try {
             boolean areFriends = catService.areFriends(id, friendId);
@@ -91,10 +86,10 @@ public class CatController {
         }
     }
 
-    @PostMapping("id{id}/delete-friend{friendId}")
+    @DeleteMapping("{id}/friends")
     public ResponseEntity<?> deleteFriend(
             @PathVariable long id,
-            @PathVariable long friendId
+            @RequestParam long friendId
     ) {
         try {
             boolean areFriends = catService.areFriends(id, friendId);
