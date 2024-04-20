@@ -17,3 +17,11 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.getByName("bootJar") {
+    enabled = false
+}
+
+tasks.getByName("jar") {
+    enabled = true
+}
