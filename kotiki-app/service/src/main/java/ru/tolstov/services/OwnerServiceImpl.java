@@ -1,64 +1,75 @@
 package ru.tolstov.services;
 
-import jakarta.persistence.EntityManagerFactory;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.tolstov.models.Owner;
 import ru.tolstov.repositories.OwnerRepository;
-import ru.tolstov.services.dto.OwnerItem;
+import ru.tolstov.services.dto.CatDto;
+import ru.tolstov.services.dto.OwnerDto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class OwnerServiceImpl extends ServiceBase implements OwnerService {
+@Service
+@AllArgsConstructor
+public class OwnerServiceImpl implements OwnerService {
     private final OwnerRepository ownerRepository;
 
-    public OwnerServiceImpl(EntityManagerFactory entityManagerFactory, OwnerRepository ownerRepository) {
-        super(entityManagerFactory);
-        this.ownerRepository = ownerRepository;
-    }
-
     @Override
+    @Transactional
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
-        return inTransaction(entityManager -> {
-            var owner = new Owner();
-            owner.setFirstName(firstName);
-            owner.setLastName(lastName);
-            owner.setBirthdate(birthdate);
-            owner.setCats(new ArrayList<>());
+        var owner = new Owner();
+        owner.setFirstName(firstName);
+        owner.setLastName(lastName);
+        owner.setBirthdate(birthdate);
+        owner.setCats(new ArrayList<>());
 
-            ownerRepository.setEntityManager(entityManager);
-
-            return ownerRepository.registerOwner(owner);
-        });
+        return ownerRepository.save(owner).getId();
     }
 
     @Override
-    public List<OwnerItem> getAllOwners() {
-        return inTransaction(entityManager -> {
-            ownerRepository.setEntityManager(entityManager);
-            List<OwnerItem> owners = new ArrayList<>();
-            for (var owner : ownerRepository.getAllOwners())
-                owners.add(new OwnerItem(owner));
+    @Transactional
+    public List<OwnerDto> getAllOwners() {
+        List<OwnerDto> owners = new ArrayList<>();
+        for (var owner : ownerRepository.findAll())
+            owners.add(new OwnerDto(owner));
 
-            return owners;
-        });
+        return owners;
     }
 
     @Override
-    public void removeOwner(long ownerID) {
-        inTransaction(entityManager -> {
-            ownerRepository.setEntityManager(entityManager);
+    @Transactional
+    public boolean removeOwner(long ownerID) throws RuntimeException {
+        var owner = ownerRepository.findById(ownerID);
+        if (owner.isEmpty())
+            return false;
 
-            var owner = ownerRepository.getOwnerById(ownerID);
-            if (owner == null)
-                return null;
+        if (!owner.get().getCats().isEmpty())
+            throw new RuntimeException("Cant remove owner while he has cats");
 
-            if (!owner.getCats().isEmpty())
-                throw new RuntimeException("Cant remove owner while he has cats");
+        ownerRepository.delete(owner.get());
+        return true;
+    }
 
-            ownerRepository.deleteOwner(owner);
+    @Override
+    public Optional<OwnerDto> getById(long id) {
+        var owner = ownerRepository.findById(id);
+        if (owner.isEmpty())
+            return Optional.empty();
 
-            return null;
-        });
+        return Optional.of(new OwnerDto(owner.get()));
+    }
+
+    @Override
+    public List<CatDto> getAllCats(long id) throws UnknownEntityIdException {
+        var owner = ownerRepository.findById(id);
+        if (owner.isEmpty())
+            throw new UnknownEntityIdException("Owner with ID=%s not found");
+
+        return owner.get().getCats().stream().map(CatDto::new).toList();
     }
 }

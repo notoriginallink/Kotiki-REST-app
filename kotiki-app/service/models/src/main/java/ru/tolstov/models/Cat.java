@@ -14,7 +14,7 @@ import java.util.Set;
 @Table(name = "cats")
 public class Cat {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cat_id")
     @EqualsAndHashCode.Include
     private long id;
@@ -32,11 +32,13 @@ public class Cat {
     @Enumerated(EnumType.STRING)
     private CatColor color;
 
-    @ManyToOne
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    @ManyToMany
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "friends",
             joinColumns = @JoinColumn(name = "first_cat_id"),

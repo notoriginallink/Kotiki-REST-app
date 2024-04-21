@@ -10,9 +10,18 @@ repositories {
 }
 
 dependencies {
-    implementation(":kotiki-app:service:")
+    implementation(project(mapOf("path" to ":kotiki-app:service")))
+    implementation(project(mapOf("path" to ":kotiki-app:service:models")))
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.getByName("bootJar") {
+    enabled = false
+}
+
+tasks.getByName("jar") {
+    enabled = true
 }

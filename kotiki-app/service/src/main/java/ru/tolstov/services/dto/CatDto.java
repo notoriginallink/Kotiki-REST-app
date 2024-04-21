@@ -9,14 +9,14 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class CatItem {
+public class CatDto {
     String name;
     LocalDate birthdate;
     String breed;
     CatColor color;
     Long owner;
 
-    public CatItem(Cat cat) {
+    public CatDto(Cat cat) {
         if (cat != null) {
             this.name = cat.getName();
             this.birthdate = cat.getBirthdate();

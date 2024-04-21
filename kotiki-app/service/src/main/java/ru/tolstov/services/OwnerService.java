@@ -1,10 +1,11 @@
 package ru.tolstov.services;
 
-import ru.tolstov.models.Owner;
-import ru.tolstov.services.dto.OwnerItem;
+import ru.tolstov.services.dto.CatDto;
+import ru.tolstov.services.dto.OwnerDto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OwnerService {
     /**
@@ -20,10 +21,16 @@ public interface OwnerService {
      * Gets all owners that are currently present in repository
      * @return {@code List} of owners
      * **/
-    List<OwnerItem> getAllOwners();
+    List<OwnerDto> getAllOwners();
     /**
      * Removes owner from repository. If owner with this ID is not present in repository then nothing happens
+     *
      * @param ownerID owner's ID
-     **/
-    void removeOwner(long ownerID);
+     * @return true if owner was deleted, or false otherwise
+     */
+    boolean removeOwner(long ownerID);
+
+    Optional<OwnerDto> getById(long id);
+
+    List<CatDto> getAllCats(long id);
 }
