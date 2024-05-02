@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS kotiki.cats (
                    'BLACK'::character varying,
                    'WHITE'::character varying,
                    'GREY'::character varying,
-                   'ORANGE'::character varying
+                   'ORANGE'::character varying,
+                   'SEMICOLOR'::character varying,
+                   'BLACK_WHITE'::character varying
                    ]::text[])
             )
 );

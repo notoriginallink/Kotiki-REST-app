@@ -2,7 +2,7 @@ package ru.tolstov.services.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.tolstov.models.Cat;
+import ru.tolstov.entities.Cat;
 import ru.tolstov.models.CatColor;
 
 import java.time.LocalDate;

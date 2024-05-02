@@ -1,4 +1,4 @@
-package ru.tolstov.services;
+package ru.tolstov.services.exceptions;
 
 import lombok.experimental.StandardException;
 

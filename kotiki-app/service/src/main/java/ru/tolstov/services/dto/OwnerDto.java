@@ -2,7 +2,7 @@ package ru.tolstov.services.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.tolstov.models.Owner;
+import ru.tolstov.entities.Owner;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

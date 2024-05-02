@@ -1,7 +1,8 @@
-package ru.tolstov.models;
+package ru.tolstov.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.tolstov.models.CatColor;
 
 import java.time.LocalDate;
 import java.util.Set;

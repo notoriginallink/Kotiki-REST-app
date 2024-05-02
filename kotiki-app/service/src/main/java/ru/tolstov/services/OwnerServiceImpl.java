@@ -2,12 +2,12 @@ package ru.tolstov.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.tolstov.models.Owner;
+import ru.tolstov.entities.Owner;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.dto.CatDto;
 import ru.tolstov.services.dto.OwnerDto;
+import ru.tolstov.services.exceptions.UnknownEntityIdException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

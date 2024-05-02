@@ -2,6 +2,7 @@ package ru.tolstov.services;
 
 import ru.tolstov.models.CatColor;
 import ru.tolstov.services.dto.CatDto;
+import ru.tolstov.services.exceptions.UnknownEntityIdException;
 
 import java.time.LocalDate;
 import java.util.List;

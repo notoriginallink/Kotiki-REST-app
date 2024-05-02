@@ -4,8 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RestController;
-import ru.tolstov.models.Cat;
+import ru.tolstov.entities.Cat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

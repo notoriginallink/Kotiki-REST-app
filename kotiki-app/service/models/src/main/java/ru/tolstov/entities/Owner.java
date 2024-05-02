@@ -1,4 +1,4 @@
-package ru.tolstov.models;
+package ru.tolstov.entities;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;

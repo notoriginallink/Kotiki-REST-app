@@ -1,6 +1,6 @@
 package ru.tolstov.repositories;
 
-import ru.tolstov.models.Cat;
+import ru.tolstov.entities.Cat;
 
 import java.util.List;
 

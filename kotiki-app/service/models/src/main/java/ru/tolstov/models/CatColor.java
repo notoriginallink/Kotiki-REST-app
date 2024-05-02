@@ -4,5 +4,7 @@ public enum CatColor {
     BLACK,
     WHITE,
     GREY,
-    ORANGE
+    ORANGE,
+    SEMICOLOR,
+    BLACK_WHITE,
 }
