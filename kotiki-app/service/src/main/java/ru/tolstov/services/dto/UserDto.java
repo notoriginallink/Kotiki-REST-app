@@ -16,6 +16,8 @@ public class UserDto {
     public UserDto(User user) {
         username = user.getUsername();
         role = user.getRole();
-        owner = user.getOwner().getId();
+        password = user.getPassword();
+        if (user.getOwner() != null)
+            owner = user.getOwner().getId();
     }
 }

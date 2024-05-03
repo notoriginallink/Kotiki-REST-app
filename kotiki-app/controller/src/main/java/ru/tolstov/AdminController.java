@@ -2,6 +2,7 @@ package ru.tolstov;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
 import ru.tolstov.services.UserService;
 import ru.tolstov.services.dto.UserDto;
