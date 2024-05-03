@@ -30,8 +30,8 @@ public class CatController {
             @RequestParam(required = false) String breed,
             @RequestParam(required = false) Integer year
     ) {
-        var user = currentUser();
-        Long ownerId = user.getOwner();
+        var userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long ownerId = userDetails.getUser().getOwner();
         return ResponseEntity.ok(catService.findFiltered(color, breed, year, ownerId));
     }
 
