@@ -54,6 +54,9 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN') " +
+            "or @customPreAuthorizeService.hasAccessToCat(authentication, #id)" +
+            "or @customPreAuthorizeService.oneOfFriends(authentication, #id)")
     public Optional<CatDto> getCatByID(long id) {
         var cat = catRepository.findById(id);
 

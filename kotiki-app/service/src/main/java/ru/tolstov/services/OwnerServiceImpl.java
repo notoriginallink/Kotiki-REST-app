@@ -2,6 +2,7 @@ package ru.tolstov.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.tolstov.entities.Owner;
 import ru.tolstov.repositories.OwnerRepository;
@@ -18,9 +19,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
     private final OwnerRepository ownerRepository;
-
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
         var owner = new Owner();
         owner.setFirstName(firstName);
@@ -43,6 +44,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public boolean removeOwner(long ownerID) throws RuntimeException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
