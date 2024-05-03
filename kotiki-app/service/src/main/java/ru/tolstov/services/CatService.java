@@ -11,14 +11,15 @@ import java.util.Optional;
 public interface CatService {
     /**
      * Creates a new cat, assigns it to owner and registers it in repository
-     * @param name cat's name
-     * @param bithdate cat's birthdate
-     * @param breed cat's breed
-     * @param color cat's color
-     * @param ownerID id of the cat's owner
+     *
+     * @param name      cat's name
+     * @param birthdate cat's birthdate
+     * @param breed     cat's breed
+     * @param color     cat's color
+     * @param ownerID   id of the cat's owner
      * @return ID of created cat
-     * **/
-    long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException;
+     **/
+    long addCat(String name, LocalDate birthdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException;
     /**
      * Removes the cat from repository. If cat with this ID is not present in repository, then nothing happens
      *
@@ -26,11 +27,6 @@ public interface CatService {
      * @return true if cat was deleted, false otherwise
      **/
     boolean removeCat(long id);
-    /**
-     * Gets all cats that are currently present in the repository
-     * @return List of cats
-     * **/
-    List<CatDto> getAllCats();
     /**
      * Finds in repository cat with given ID
      * @param id cat's ID

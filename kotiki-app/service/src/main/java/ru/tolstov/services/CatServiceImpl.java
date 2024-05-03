@@ -2,6 +2,7 @@ package ru.tolstov.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.tolstov.entities.Cat;
 import ru.tolstov.models.CatColor;
@@ -22,14 +23,15 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    public long addCat(String name, LocalDate bithdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException {
+    @PreAuthorize("hasRole('ADMIN') or @customPreAuthorizeService.isCurrentOwner(authentication, #ownerID)")
+    public long addCat(String name, LocalDate birthdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
             throw new UnknownEntityIdException("Owner with ID=%s does not exist".formatted(ownerID));
 
         var cat = new Cat();
         cat.setName(name);
-        cat.setBirthdate(bithdate);
+        cat.setBirthdate(birthdate);
         cat.setBreed(breed);
         cat.setColor(color);
         cat.setOwner(owner.get());
@@ -40,6 +42,7 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @customPreAuthorizeService.hasAccessToCat(authentication, #id)")
     public boolean removeCat(long id) {
         var cat = catRepository.findById(id);
         if (cat.isEmpty())
@@ -47,12 +50,6 @@ public class CatServiceImpl implements CatService {
 
         catRepository.delete(cat.get());
         return true;
-    }
-
-    @Override
-    @Transactional
-    public List<CatDto> getAllCats() {
-        return catRepository.findAll().stream().map(CatDto::new).toList();
     }
 
     @Override
@@ -83,6 +80,7 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void makeFriendship(long firstCatID, long secondCatID) throws UnknownEntityIdException {
         var firstCat = checkCatPersistence(catRepository, firstCatID);
         var secondCat = checkCatPersistence(catRepository, secondCatID);
@@ -101,6 +99,7 @@ public class CatServiceImpl implements CatService {
      * **/
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void destroyFriendship(long firstCatID, long secondCatID) throws UnknownEntityIdException {
         var firstCat = checkCatPersistence(catRepository, firstCatID);
         var secondCat = checkCatPersistence(catRepository, secondCatID);
@@ -116,6 +115,7 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN') or @customPreAuthorizeService.hasAccessToCat(authentication, #id)")
     public List<CatDto> getFriends(long id) throws UnknownEntityIdException {
         var cat = checkCatPersistence(catRepository, id);
 

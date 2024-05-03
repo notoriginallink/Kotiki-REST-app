@@ -23,8 +23,10 @@ public class SecurityConfig {
         return http
                 .csrf(c -> c.disable())
                 .cors(c -> c.disable())
-                .authorizeHttpRequests(c -> c.requestMatchers("/login").permitAll())
-                .authorizeHttpRequests(c -> c.requestMatchers( "/admin/**").hasAuthority(UserRole.ADMIN.toString()))
+                .authorizeHttpRequests(c -> c.requestMatchers("/test/**").permitAll())
+                .authorizeHttpRequests(c -> c.requestMatchers("/login").anonymous())
+                .authorizeHttpRequests(c -> c.requestMatchers( "/admin/**").hasAuthority(UserRole.ADMIN.name()))
+                .authorizeHttpRequests(c -> c.requestMatchers("/owners").hasAuthority(UserRole.ADMIN.name()))
                 .authorizeHttpRequests(c -> c.anyRequest().authenticated())
                 .formLogin(c -> c.permitAll())
                 .logout(c -> c.permitAll())
