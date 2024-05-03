@@ -8,19 +8,18 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
-@ToString
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "owners")
 public class Owner {
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "owner_id")
+    @Column(name = "id")
     private long id;
 
     @Column(name = "first_name")
@@ -32,7 +31,6 @@ public class Owner {
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Cat> cats = new ArrayList<>();
 }

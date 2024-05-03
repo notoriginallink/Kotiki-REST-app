@@ -1,4 +1,4 @@
-INSERT INTO kotiki.cats (cat_id, name, breed, color, birthdate, owner_id)
+INSERT INTO kotiki.cats (id, name, breed, color, birthdate, owner_id)
 VALUES
     (DEFAULT, 'Gavrusha', 'Abyssinian', 'ORANGE', '2020-05-07', 2),
     (DEFAULT, 'Stepa', 'Siamese', 'GREY', '2019-09-10', 2),

@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS kotiki.users (
         username        varchar(255)    NOT NULL,
         password        varchar(255),
         role            varchar(255),
-        owner_id        bigint          UNIQUE REFERENCES kotiki.owners(owner_id),
+        owner_id        bigint          UNIQUE REFERENCES kotiki.owners(id),
         PRIMARY KEY (username),
         CONSTRAINT users_role_check
             CHECK (role::text = ANY

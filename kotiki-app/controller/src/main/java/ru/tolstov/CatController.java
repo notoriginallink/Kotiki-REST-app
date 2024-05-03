@@ -1,14 +1,19 @@
 package ru.tolstov;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.tolstov.models.CatColor;
+import ru.tolstov.models.UserRole;
 import ru.tolstov.services.CatService;
+import ru.tolstov.services.UserService;
 import ru.tolstov.services.dto.CatDto;
+import ru.tolstov.services.security.UserDetailsImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,7 +28,13 @@ public class CatController {
             @RequestParam(required = false) String breed,
             @RequestParam(required = false) Integer year
     ) {
-        return ResponseEntity.ok(catService.findFiltered(color, breed, year));
+        var user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(user.getAuthorities());
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(UserRole.ADMIN.name())))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ArrayList<>());
+
+        Long ownerId = user.getUser().getOwner();
+        return ResponseEntity.ok(catService.findFiltered(color, breed, year, ownerId));
     }
 
     @PostMapping("")

@@ -63,5 +63,5 @@ public interface CatService {
      * **/
     List<CatDto> getFriends(long id) throws UnknownEntityIdException;
 
-    List<CatDto> findFiltered(CatColor color, String breed, Integer year);
+    List<CatDto> findFiltered(CatColor color, String breed, Integer year, Long ownerId);
 }

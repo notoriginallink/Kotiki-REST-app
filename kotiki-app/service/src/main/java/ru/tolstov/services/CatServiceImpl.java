@@ -126,9 +126,9 @@ public class CatServiceImpl implements CatService {
         return friends;
     }
 
-    public List<CatDto> findFiltered(CatColor color, String breed, Integer year) {
+    public List<CatDto> findFiltered(CatColor color, String breed, Integer year, Long ownerId) {
         String color_string = (color == null ? null : color.toString());
-        return catRepository.findFiltered(color_string, breed, year).stream().map(CatDto::new).toList();
+        return catRepository.findFiltered(color_string, breed, year, ownerId).stream().map(CatDto::new).toList();
     }
 
     private Cat checkCatPersistence(CatRepository repository, long id) {

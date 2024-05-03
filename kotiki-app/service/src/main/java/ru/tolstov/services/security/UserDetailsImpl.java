@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.tolstov.entities.User;
+import ru.tolstov.services.dto.UserDto;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +19,10 @@ public class UserDetailsImpl implements UserDetails {
         var auth = new ArrayList<GrantedAuthority>();
         auth.add(new SimpleGrantedAuthority(user.getRole().name()));
         return auth;
+    }
+
+    public UserDto getUser() {
+        return new UserDto(user);
     }
 
     @Override
