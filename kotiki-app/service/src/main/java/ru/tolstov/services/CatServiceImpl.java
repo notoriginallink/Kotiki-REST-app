@@ -56,7 +56,9 @@ public class CatServiceImpl implements CatService {
 
     @Override
     @Transactional
-    @PostAuthorize("returnObject.empty or hasAuthority('ADMIN') or @authorizeService.hasAccessToCat(authentication, returnObject.get())")
+    @PostAuthorize("returnObject.empty or hasAuthority('ADMIN') " +
+            "or @authorizeService.hasAccessToCat(authentication, returnObject.get()) " +
+            "or @authorizeService.isOneOfFriends(authentication, returnObject.get())")
     public Optional<CatDto> getCatByID(Long id) {
         var cat = catRepository.findById(id);
 

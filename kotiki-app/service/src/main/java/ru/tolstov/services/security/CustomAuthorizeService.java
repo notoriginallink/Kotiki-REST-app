@@ -9,7 +9,7 @@ import ru.tolstov.services.dto.CatDto;
 
 @AllArgsConstructor
 @Component("authorizeService")
-public class CustomPreAuthorizeService {
+public class CustomAuthorizeService {
     private CatRepository catRepository;
     private OwnerRepository ownerRepository;
     /**
