@@ -35,6 +35,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<OwnerDto> getAllOwners() {
         List<OwnerDto> owners = new ArrayList<>();
         for (var owner : ownerRepository.findAll())
@@ -46,7 +47,7 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
-    public boolean removeOwner(long ownerID) throws RuntimeException {
+    public boolean removeOwner(Long ownerID) throws RuntimeException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
             return false;
@@ -59,7 +60,8 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Optional<OwnerDto> getById(long id) {
+    @PreAuthorize("hasAuthority('ADMIN') or @authorizeService.isCurrentOwner(authentication, #id.longValue())")
+    public Optional<OwnerDto> getById(Long id) {
         var ownerOptional = ownerRepository.findById(id);
         if (ownerOptional.isEmpty())
             return Optional.empty();
@@ -70,7 +72,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<CatDto> getAllCats(long id) throws UnknownEntityIdException {
+    public List<CatDto> getAllCats(Long id) throws UnknownEntityIdException {
         var owner = ownerRepository.findById(id);
         if (owner.isEmpty())
             throw new UnknownEntityIdException("Owner with ID=%s not found");

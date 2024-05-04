@@ -27,7 +27,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(c -> c.requestMatchers("/test/**").permitAll())
                 .authorizeHttpRequests(c -> c.requestMatchers("/login").anonymous())
                 .authorizeHttpRequests(c -> c.requestMatchers( "/admin/**").hasAuthority(UserRole.ADMIN.name()))
-                .authorizeHttpRequests(c -> c.requestMatchers("/owners").hasAuthority(UserRole.ADMIN.name()))
                 .authorizeHttpRequests(c -> c.anyRequest().authenticated())
                 .formLogin(c -> c.permitAll())
                 .logout(c -> c.permitAll())

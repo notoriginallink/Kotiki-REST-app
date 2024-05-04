@@ -28,9 +28,9 @@ public interface OwnerService {
      * @param ownerID owner's ID
      * @return true if owner was deleted, or false otherwise
      */
-    boolean removeOwner(long ownerID);
+    boolean removeOwner(Long ownerID);
 
-    Optional<OwnerDto> getById(long id);
+    Optional<OwnerDto> getById(Long id);
 
-    List<CatDto> getAllCats(long id);
+    List<CatDto> getAllCats(Long id);
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import ru.tolstov.Main;
+import ru.tolstov.config.SecurityConfig;
 import ru.tolstov.services.dto.UserDto;
 import ru.tolstov.services.security.UserDetailsImpl;
 
@@ -28,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = Main.class)
+@SpringBootTest(classes = {Main.class, SecurityConfig.class})
 @TestPropertySource(locations = "classpath:application-integrationtest.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class OwnerControllerTests {
@@ -49,7 +51,10 @@ public class OwnerControllerTests {
     }
 
     @BeforeEach
-    public void setup() {
+    public void setup(@Autowired Flyway flyway) {
+        flyway.clean();
+        flyway.migrate();
+
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
@@ -65,6 +70,24 @@ public class OwnerControllerTests {
         mvc.perform(get("/owners/%s".formatted(id))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails(value = "Danya", userDetailsServiceBeanName = "userDetailsService")
+    public void getById_whenExistsAndItself_thenStatus200() throws Exception {
+        long id = 2;
+        mvc.perform(get("/owners/%s".formatted(id))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails(value = "Danya", userDetailsServiceBeanName = "userDetailsService")
+    public void getById_whenExistsAndNotItself_thenStatus400() throws Exception {
+        long id = 1;
+        mvc.perform(get("/owners/%s".formatted(id))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
