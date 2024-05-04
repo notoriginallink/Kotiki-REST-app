@@ -131,6 +131,9 @@ public class CatServiceImpl implements CatService {
         return friends;
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN') or @authorizeService.isCurrentOwner(authentication, #ownerId.longValue())")
     public List<CatDto> findFiltered(CatColor color, String breed, Integer year, Long ownerId) {
         String color_string = (color == null ? null : color.toString());
         return catRepository.findFiltered(color_string, breed, year, ownerId).stream().map(CatDto::new).toList();

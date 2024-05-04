@@ -31,10 +31,9 @@ public class CustomAuthorizeService {
      * @return true if cat with this ID is not present in database or if cat belongs to current user. false otherwise
      * **/
     public boolean hasAccessToCatID(Authentication auth, long catId) {
-        System.out.println("START");
         var user = (UserDetailsImpl) auth.getPrincipal();
         var cat = catRepository.findById(catId);
-        System.out.println("CHECK");
+
         if (cat.isEmpty())
             return true;
         System.out.println(cat.get());

@@ -16,6 +16,15 @@ public class AdminController {
     private CatService catService;
     private UserService userService;
 
+    @GetMapping("/cats")
+    public ResponseEntity<?> getAllCats(
+            @RequestParam(required = false) CatColor color,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) Integer year
+    ) {
+        return ResponseEntity.ok(catService.findFiltered(color, breed, year, null));
+    }
+
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userService.getAll());

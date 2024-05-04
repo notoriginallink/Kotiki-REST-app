@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.tolstov.entities.Owner;
+import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.dto.CatDto;
 import ru.tolstov.services.dto.OwnerDto;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
     private final OwnerRepository ownerRepository;
+    private final CatRepository catRepository;
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -71,12 +73,12 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or @authorizeService.isCurrentOwner(authentication, #id.longValue())")
     public List<CatDto> getAllCats(Long id) throws UnknownEntityIdException {
         var owner = ownerRepository.findById(id);
         if (owner.isEmpty())
             throw new UnknownEntityIdException("Owner with ID=%s not found");
 
-        return owner.get().getCats().stream().map(CatDto::new).toList();
+        return catRepository.findFiltered(null, null, null, id).stream().map(CatDto::new).toList();
     }
 }
