@@ -2,6 +2,7 @@ package ru.tolstov.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.tolstov.entities.Owner;
@@ -21,7 +22,7 @@ public class OwnerServiceImpl implements OwnerService {
     private final OwnerRepository ownerRepository;
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
         var owner = new Owner();
         owner.setFirstName(firstName);
@@ -44,7 +45,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public boolean removeOwner(long ownerID) throws RuntimeException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
@@ -59,14 +60,16 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     public Optional<OwnerDto> getById(long id) {
-        var owner = ownerRepository.findById(id);
-        if (owner.isEmpty())
+        var ownerOptional = ownerRepository.findById(id);
+        if (ownerOptional.isEmpty())
             return Optional.empty();
+        var ownerDto = new OwnerDto(ownerOptional.get());
 
-        return Optional.of(new OwnerDto(owner.get()));
+        return Optional.of(ownerDto);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<CatDto> getAllCats(long id) throws UnknownEntityIdException {
         var owner = ownerRepository.findById(id);
         if (owner.isEmpty())

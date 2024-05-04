@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS kotiki.users (
             CHECK (role::text = ANY
                    (ARRAY
                        [
-                       'GUEST'::character varying,
                        'USER'::character varying,
                        'ADMIN'::character varying
                        ]::text[])

@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class CatDto {
+    Long id;
     String name;
     LocalDate birthdate;
     String breed;
@@ -20,6 +21,7 @@ public class CatDto {
 
     public CatDto(Cat cat) {
         if (cat != null) {
+            this.id = cat.getId();
             this.name = cat.getName();
             this.birthdate = cat.getBirthdate();
             this.breed = cat.getBreed();

@@ -1,3 +1,5 @@
+package services;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +30,7 @@ public class OwnerServiceTests {
         MockitoAnnotations.openMocks(this);
 
         testOwner = new Owner();
-        testOwner.setId(1);
+        testOwner.setId(1L);
         testOwner.setLastName("Aboba");
         testOwner.setFirstName("Amogus");
         testOwner.setCats(new ArrayList<>());

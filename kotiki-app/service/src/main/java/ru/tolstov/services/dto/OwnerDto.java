@@ -11,12 +11,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class OwnerDto {
+    Long id;
     String firstName;
     String lastName;
     LocalDate birthdate;
     List<Long> catIds;
 
     public OwnerDto(Owner owner) {
+        this.id = owner.getId();
         this.firstName = owner.getFirstName();
         this.lastName = owner.getLastName();
         this.birthdate = owner.getBirthdate();

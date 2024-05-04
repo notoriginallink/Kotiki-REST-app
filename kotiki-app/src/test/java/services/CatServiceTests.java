@@ -1,3 +1,5 @@
+package services;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -35,13 +37,13 @@ public class CatServiceTests {
         MockitoAnnotations.openMocks(this);
 
         testOwner = new Owner();
-        testOwner.setId(1);
+        testOwner.setId(1L);
         testOwner.setLastName("Aboba");
         testOwner.setFirstName("Amogus");
         testOwner.setCats(new ArrayList<>());
 
         testCat = new Cat();
-        testCat.setId(1);
+        testCat.setId(1L);
         testCat.setName("Biba");
         testCat.setBreed("Siamese");
         testCat.setColor(CatColor.ORANGE);

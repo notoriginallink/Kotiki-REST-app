@@ -19,20 +19,20 @@ public interface CatService {
      * @param ownerID   id of the cat's owner
      * @return ID of created cat
      **/
-    long addCat(String name, LocalDate birthdate, String breed, CatColor color, long ownerID) throws UnknownEntityIdException;
+    long addCat(String name, LocalDate birthdate, String breed, CatColor color, Long ownerID) throws UnknownEntityIdException;
     /**
      * Removes the cat from repository. If cat with this ID is not present in repository, then nothing happens
      *
      * @param id ID of a cat to be removed
      * @return true if cat was deleted, false otherwise
      **/
-    boolean removeCat(long id);
+    boolean removeCat(Long id);
     /**
      * Finds in repository cat with given ID
      * @param id cat's ID
      * @return an Optional describing the cat with given ID, or empty Optional if cat with this ID is not present
      * **/
-    Optional<CatDto> getCatByID(long id);
+    Optional<CatDto> getCatByID(Long id);
     /**
      * Checks if two cats have a friendship. Doesn't matter in which order IDs are given
      * @param firstCatID ID of first cat

@@ -36,13 +36,4 @@ public class AdminController {
         userService.delete(username);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/cats")
-    public ResponseEntity<?> getAllCats(
-            @RequestParam(required = false) CatColor color,
-            @RequestParam(required = false) String breed,
-            @RequestParam(required = false) Integer year
-    ) {
-        return ResponseEntity.ok(catService.findFiltered(color, breed, year, null));
-    }
 }
