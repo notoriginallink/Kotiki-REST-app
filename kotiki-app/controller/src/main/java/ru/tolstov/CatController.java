@@ -1,21 +1,14 @@
 package ru.tolstov;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import ru.tolstov.entities.User;
 import ru.tolstov.models.CatColor;
-import ru.tolstov.models.UserRole;
 import ru.tolstov.services.CatService;
-import ru.tolstov.services.UserService;
 import ru.tolstov.services.dto.CatDto;
-import ru.tolstov.services.dto.UserDto;
 import ru.tolstov.services.security.UserDetailsImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
