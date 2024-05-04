@@ -1,12 +1,13 @@
 package ru.tolstov;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.tolstov.models.CatColor;
 import ru.tolstov.services.CatService;
 import ru.tolstov.services.dto.CatDto;
+import ru.tolstov.services.security.UserDetailsImpl;
 
 import java.util.List;
 
@@ -22,7 +23,9 @@ public class CatController {
             @RequestParam(required = false) String breed,
             @RequestParam(required = false) Integer year
     ) {
-        return ResponseEntity.ok(catService.findFiltered(color, breed, year));
+        var userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long ownerId = userDetails.getUser().getOwner();
+        return ResponseEntity.ok(catService.findFiltered(color, breed, year, ownerId));
     }
 
     @PostMapping("")
@@ -40,6 +43,7 @@ public class CatController {
     @GetMapping("/{id}")
     public ResponseEntity<CatDto> getById(@PathVariable long id) {
         var cat = catService.getCatByID(id);
+
         if (cat.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -48,11 +52,8 @@ public class CatController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable long id) {
-        var result = catService.removeCat(id);
-        if (result)
-            return ResponseEntity.ok().build();
-
-        return ResponseEntity.notFound().build();
+        catService.removeCat(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/friends")

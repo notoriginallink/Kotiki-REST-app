@@ -2,12 +2,15 @@ package ru.tolstov.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import ru.tolstov.models.Owner;
+import ru.tolstov.entities.Owner;
+import ru.tolstov.repositories.CatRepository;
 import ru.tolstov.repositories.OwnerRepository;
 import ru.tolstov.services.dto.CatDto;
 import ru.tolstov.services.dto.OwnerDto;
+import ru.tolstov.services.exceptions.UnknownEntityIdException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,9 +21,10 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OwnerServiceImpl implements OwnerService {
     private final OwnerRepository ownerRepository;
-
+    private final CatRepository catRepository;
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public long createOwner(String firstName, String lastName, LocalDate birthdate) {
         var owner = new Owner();
         owner.setFirstName(firstName);
@@ -33,6 +37,7 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<OwnerDto> getAllOwners() {
         List<OwnerDto> owners = new ArrayList<>();
         for (var owner : ownerRepository.findAll())
@@ -43,7 +48,8 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     @Transactional
-    public boolean removeOwner(long ownerID) throws RuntimeException {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public boolean removeOwner(Long ownerID) throws RuntimeException {
         var owner = ownerRepository.findById(ownerID);
         if (owner.isEmpty())
             return false;
@@ -56,20 +62,23 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public Optional<OwnerDto> getById(long id) {
-        var owner = ownerRepository.findById(id);
-        if (owner.isEmpty())
+    @PreAuthorize("hasAuthority('ADMIN') or @authorizeService.isCurrentOwner(authentication, #id.longValue())")
+    public Optional<OwnerDto> getById(Long id) {
+        var ownerOptional = ownerRepository.findById(id);
+        if (ownerOptional.isEmpty())
             return Optional.empty();
+        var ownerDto = new OwnerDto(ownerOptional.get());
 
-        return Optional.of(new OwnerDto(owner.get()));
+        return Optional.of(ownerDto);
     }
 
     @Override
-    public List<CatDto> getAllCats(long id) throws UnknownEntityIdException {
+    @PreAuthorize("hasAuthority('ADMIN') or @authorizeService.isCurrentOwner(authentication, #id.longValue())")
+    public List<CatDto> getAllCats(Long id) throws UnknownEntityIdException {
         var owner = ownerRepository.findById(id);
         if (owner.isEmpty())
             throw new UnknownEntityIdException("Owner with ID=%s not found");
 
-        return owner.get().getCats().stream().map(CatDto::new).toList();
+        return catRepository.findFiltered(null, null, null, id).stream().map(CatDto::new).toList();
     }
 }

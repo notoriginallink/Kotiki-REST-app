@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.tolstov.services.FriendshipException;
-import ru.tolstov.services.UnknownEntityIdException;
+import ru.tolstov.services.exceptions.FriendshipException;
+import ru.tolstov.services.exceptions.UnknownEntityIdException;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {
